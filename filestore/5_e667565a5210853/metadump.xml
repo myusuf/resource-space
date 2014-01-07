@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<record xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dc="http://purl.org/dc/elements/1.1/" resourcespace:resourceid="5" resourcespace:extension="jpg" resourcespace:resourcetype="Photo" resourcespace:resourcetypeid="1" >
+
+<dc:title rsfieldtitle="Title" rsembeddedequiv="Title" rsfieldref="8" rsfieldtype="0">first upload</dc:title>
+
+<resourcespace:field rsfieldtitle="Original filename" rsembeddedequiv="" rsfieldref="" rsfieldtype="0"></resourcespace:field>
+
+<resourcespace:field rsfieldtitle="Keywords" rsembeddedequiv="Keywords,Subject" rsfieldref="1" rsfieldtype="1">first</resourcespace:field>
+
+<dc:description rsfieldtitle="Caption" rsembeddedequiv="Caption-Abstract,Description,ImageDescription" rsfieldref="18" rsfieldtype="1">this is the first upload</dc:description>
+
+<resourcespace:field rsfieldtitle="Extracted text" rsembeddedequiv="" rsfieldref="" rsfieldtype="5"></resourcespace:field>
+
+<resourcespace:field rsfieldtitle="Country" rsembeddedequiv="category,country" rsfieldref="3" rsfieldtype="9">United States</resourcespace:field>
+
+<resourcespace:field rsfieldtitle="Named person(s)" rsembeddedequiv="People" rsfieldref="29" rsfieldtype="0">franz</resourcespace:field>
+
+<dc:date rsfieldtitle="Date" rsembeddedequiv="DateTimeOriginal" rsfieldref="12" rsfieldtype="4">2006-08-27 16:53:57</dc:date>
+
+<resourcespace:field rsfieldtitle="Credit" rsembeddedequiv="Source,Creator,Credit,By-line" rsfieldref="10" rsfieldtype="0">franz</resourcespace:field>
+
+<resourcespace:field rsfieldtitle="Notes" rsembeddedequiv="JobID" rsfieldref="" rsfieldtype="1"></resourcespace:field>
+
+<resourcespace:field rsfieldtitle="Camera make / model" rsembeddedequiv="Model" rsfieldref="52" rsfieldtype="0">Canon EOS-1Ds Mark II</resourcespace:field>
+
+<resourcespace:field rsfieldtitle="Source" rsembeddedequiv="" rsfieldref="54" rsfieldtype="3">Digital Camera</resourcespace:field>
+
+</record>
