@@ -1,0 +1,1 @@
+mediaapi_oauth_tokens,0,PRIMARY,1,mediaapi_token,A,0,,,,BTREE,,

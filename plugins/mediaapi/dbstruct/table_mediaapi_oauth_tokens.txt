@@ -1,0 +1,4 @@
+mediaapi_token,varchar(50),NO,PRI,,
+mediaapi_type,text,NO,,,
+mediaapi_scope,text,NO,,,
+mediaapi_expiration,datetime,NO,,,
