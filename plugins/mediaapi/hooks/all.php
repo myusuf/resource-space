@@ -43,3 +43,16 @@ function HookMediaapiAllAfternewresource($ref)
     	}
     }
 }
+
+function HookMediaapiAllUploadfilesuccess($ref)
+{
+
+    //var_dump(get_resource_files($ref));die;
+    //todo: do an actual hard copy of resource files from above
+    //$path=get_resource_path($resource, true, "", true, $extension, -1, 1, false, "", $ref);
+
+    $ref     = copy_resource($ref);
+    $plfilename = isset($_REQUEST["name"]) ? $_REQUEST["name"] : '';
+    $newfile = add_alternative_file($ref, $plfilename);
+    save_alternative_file($ref, $newfile);
+}
