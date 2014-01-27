@@ -4,6 +4,7 @@ include "../include/authenticate.php";
 include "../include/general.php";
 include "../include/resource_functions.php";
 include "../include/image_processing.php";
+include "../plugins/mediaapi/functions.php";
 
 $ref=getvalescaped("ref","",true);
 
@@ -40,7 +41,9 @@ if (getval("name","")!="")
 	redirect ($baseurl_short."pages/alternative_files.php?ref=$resource&search=".urlencode($search)."&offset=$offset&order_by=$order_by&sort=$sort&archive=$archive");
 	}
 
-	
+$mediaapi_derivatives = mediaapi_get_derivative_resources($ref);
+$mediaapi_derivatives = !empty($mediaapi_derivatives) ? $mediaapi_derivatives[0] : null;
+
 include "../include/header.php";
 ?>
 <div class="BasicsBox">
@@ -49,14 +52,14 @@ include "../include/header.php";
 <a onClick="return CentralSpaceLoad(this,true);" href="<?php echo $baseurl_short?>pages/edit.php?ref=<?php echo $resource?>&search=<?php echo urlencode($search)?>&offset=<?php echo $offset?>&order_by=<?php echo urlencode($order_by)?>&sort=<?php echo urlencode($sort)?>&archive=<?php echo urlencode($archive)?>">&lt;&nbsp;<?php echo $lang["backtoeditresource"]?></a><br / >
 <a onClick="return CentralSpaceLoad(this,true);" href="<?php echo $baseurl_short?>pages/view.php?ref=<?php echo $resource?>&search=<?php echo urlencode($search)?>&offset=<?php echo $offset?>&order_by=<?php echo urlencode($order_by)?>&sort=<?php echo urlencode($sort)?>&archive=<?php echo urlencode($archive)?>">&lt;&nbsp;<?php echo $lang["backtoresourceview"]?></a>
 </p>
-<?php if ($alternative_file_resource_preview){ 
+<?php if ($alternative_file_resource_preview){
 		$imgpath=get_resource_path($resourcedata['ref'],true,"col",false);
-		if (file_exists($imgpath)){ ?><img src="<?php echo get_resource_path($resourcedata['ref'],false,"col",false);?>"/><?php } 
+		if (file_exists($imgpath)){ ?><img src="<?php echo get_resource_path($resourcedata['ref'],false,"col",false);?>"/><?php }
 	} ?>
-	<?php if ($alternative_file_resource_title){ 
+	<?php if ($alternative_file_resource_title){
 		echo "<h2>".i18n_get_translated($resourcedata['field'.$view_title_field])."</h2><br/>";
 	}?>
-	
+
 <h1><?php echo $lang["editalternativefile"]?></h1>
 
 
@@ -68,6 +71,11 @@ include "../include/header.php";
 
 <div class="Question">
 <label><?php echo $lang["resourceid"]?></label><div class="Fixed"><?php echo htmlspecialchars($resource) ?></div>
+<div class="clearerleft"> </div>
+</div>
+
+<div class="Question">
+<label for="name"><?php echo $lang["name"]?></label><input type=text class="stdwidth" name="ordinal" id="ordinal" value="<?php echo htmlspecialchars(1) ?>" maxlength="10">
 <div class="clearerleft"> </div>
 </div>
 
@@ -102,13 +110,108 @@ include "../include/header.php";
 <div class="clearerleft"> </div>
 </div>
 
+<h1>Dirivative Specific</h1>
+
+<div class="Question">
+<label>Derivative ID</label><div class="Fixed">
+    <?php $derivative_id = !empty($mediaapi_derivatives['derivative_id']) ? $mediaapi_derivatives['derivative_id'] : ''; ?>
+    <input type="hidden" name="derivative" value="<?php echo $derivative_id; ?>">
+    <?php echo htmlspecialchars($derivative_id); ?>
+</div>
+<div class="clearerleft"> </div>
+</div>
+
+<div class="Question">
+<label>Media Object ID</label><div class="Fixed"><?php echo !empty($mediaapi_derivatives['media_object_id']) ? $mediaapi_derivatives['media_object_id'] : ''; ?></div>
+<div class="clearerleft"> </div>
+</div>
+
+<div class="Question">
+<label>Media Server ID</label><div class="Fixed"><?php echo !empty($mediaapi_derivatives['media_server_id']) ? $mediaapi_derivatives['media_server_id'] : ''; ?></div>
+<div class="clearerleft"> </div>
+</div>
+
+<div class="Question">
+<?php $short_name = !empty($mediaapi_derivatives['short_name']) ? $mediaapi_derivatives['short_name'] : ''; ?>
+<label for="name">Short name</label><input type=text class="stdwidth" name="short_name" id="short_name" value="<?php echo htmlspecialchars($short_name); ?>" maxlength="100">
+<div class="clearerleft"> </div>
+</div>
+
+<div class="Question">
+<?php $prefix = !empty($mediaapi_derivatives['prefix']) ? $mediaapi_derivatives['prefix'] : ''; ?>
+<label for="name">Prefix</label><input type=text class="stdwidth" name="prefix" id="prefix" value="<?php echo htmlspecialchars($prefix) ?>" maxlength="100">
+<div class="clearerleft"> </div>
+</div>
+
+<div class="Question">
+<?php $file_path = !empty($mediaapi_derivatives['file_path']) ? $mediaapi_derivatives['file_path'] : ''; ?>
+<label for="name">File path</label><input type=text class="stdwidth" name="file_path" id="file_path" value="<?php echo htmlspecialchars($file_path) ?>" maxlength="100">
+<div class="clearerleft"> </div>
+</div>
+
+<div class="Question">
+<?php $file_name = !empty($mediaapi_derivatives['file_name']) ? $mediaapi_derivatives['file_name'] : ''; ?>
+<label for="name">File name</label><input type=text class="stdwidth" name="file_name" id="file_name" value="<?php echo htmlspecialchars($file_name) ?>" maxlength="100">
+<div class="clearerleft"> </div>
+</div>
+
+<div class="Question">
+<?php $file_extension = !empty($mediaapi_derivatives['file_extension']) ? $mediaapi_derivatives['file_extension'] : ''; ?>
+<label for="name">File extension</label><input type=text class="stdwidth" name="file_extension" id="file_extension" value="<?php echo htmlspecialchars($file_extension) ?>" maxlength="100">
+<div class="clearerleft"> </div>
+</div>
+
+<div class="Question">
+<label for="name">Use extension</label>
+    <?php $use_extension = !empty($mediaapi_derivatives['use_extension']) ? $mediaapi_derivatives['use_extension'] : ''; ?>
+    <select class="stdwidth" name="use_extension" id="use_extension">
+       <option <?php echo ($use_extension == '')  ? 'selected="selected"' : ''; ?> value=""></option>
+       <option <?php echo ($use_extension == 'n') ? 'selected="selected"' : ''; ?> value="n">No</option>
+	   <option <?php echo ($use_extension == 'y') ? 'selected="selected"' : ''; ?> value="y">Yes</option>
+	</select>
+<div class="clearerleft"> </div>
+</div>
+
+<div class="Question">
+<label for="name">Is downloadable</label>
+    <?php $is_downloadable = !empty($mediaapi_derivatives['is_downloadable']) ? $mediaapi_derivatives['is_downloadable'] : ''; ?>
+    <select class="stdwidth" name="is_downloadable" id="is_downloadable">
+       <option <?php echo ($is_downloadable == '')   ? 'selected="selected"' : ''; ?> value=""></option>
+       <option <?php echo ($is_downloadable == 'n')  ? 'selected="selected"' : ''; ?> value="n">No</option>
+	   <option <?php echo ($is_downloadable == 'y')  ? 'selected="selected"' : ''; ?> value="y">Yes</option>
+	</select>
+<div class="clearerleft"> </div>
+</div>
+
+<div class="Question">
+<label for="name">Is streamable</label>
+    <?php $is_streamable = !empty($mediaapi_derivatives['is_streamable']) ? $mediaapi_derivatives['is_streamable'] : ''; ?>
+    <select class="stdwidth" name="is_streamable" id="is_streamable">
+       <option <?php echo ($is_streamable == '')   ? 'selected="selected"' : ''; ?> value=""></option>
+       <option <?php echo ($is_streamable == 'n')  ? 'selected="selected"' : ''; ?> value="n">No</option>
+	   <option <?php echo ($is_streamable == 'y')  ? 'selected="selected"' : ''; ?> value="y">Yes</option>
+	</select>
+<div class="clearerleft"> </div>
+</div>
+
+<div class="Question">
+<label for="name">Is primary</label>
+    <?php $is_primary = !empty($mediaapi_derivatives['is_primary']) ? $mediaapi_derivatives['is_primary'] : ''; ?>
+    <select class="stdwidth" name="is_primary" id="is_primary">
+       <option <?php echo ($is_primary == '')   ? 'selected="selected"' : ''; ?> value=""></option>
+       <option <?php echo ($is_primary == 'n')  ? 'selected="selected"' : ''; ?> value="n">No</option>
+	   <option <?php echo ($is_primary == 'y')  ? 'selected="selected"' : ''; ?> value="y">Yes</option>
+	</select>
+<div class="clearerleft"> </div>
+</div>
+
 <div class="QuestionSubmit">
-<label for="buttons"> </label>			
+<label for="buttons"> </label>
 <input name="save" type="submit" value="&nbsp;&nbsp;<?php echo $lang["save"]?>&nbsp;&nbsp;" />
 </div>
 </form>
 </div>
 
-<?php		
+<?php
 include "../include/footer.php";
 ?>
