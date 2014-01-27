@@ -1,5 +1,7 @@
 <?php
-include_once dirname(dirname(__FILE__)) . '/stdlib.php';
+$mediaroot = dirname(dirname(__FILE__));
+include_once $mediaroot . '/stdlib.php';
+include_once $mediaroot . '/functions.php';
 
 /**
  * Hook to group all resources
@@ -82,4 +84,20 @@ function HookMediaapiAllUploadfilesuccess($ref)
 
 
     //save_alternative_file($ref, $new_resource);
+}
+
+function HookMediaapiAllPost_savealternativefile($ref)
+{
+    $data = array();
+    $data['short_name']      = getvalescaped("short_name", "");
+    $data['prefix']          = getvalescaped("prefix", "");
+    $data['file_path']       = getvalescaped("file_path", "");
+    $data['file_name']       = getvalescaped("file_name", "");
+    $data['file_extension']  = getvalescaped("file_extension", "");
+    $data['use_extension']   = getvalescaped("use_extension", "");
+    $data['is_downloadable'] = getvalescaped("is_downloadable", "");
+    $data['is_streamable']   = getvalescaped("is_streamable", "");
+    $data['is_primary']      = getvalescaped("is_primary", "");
+
+    mediaapi_upsert_derivative_resources($ref, $data);
 }
