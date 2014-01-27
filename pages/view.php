@@ -33,6 +33,7 @@ if (substr($order_by,0,5)=="field"){$default_sort="ASC";}
 $sort=getval("sort",$default_sort);
 
 # next / previous resource browsing
+$curpos=getvalescaped("curpos","");
 $go=getval("go","");
 if ($go!="") 
 	{
@@ -58,6 +59,11 @@ if ($go!="")
 			if (($go=="previous") && ($pos>0)) {$ref=$result[$pos-1]["ref"];}
 			if (($go=="next") && ($pos<($n-1))) {$ref=$result[$pos+1]["ref"];if (($pos+1)>=($offset+72)) {$offset=$pos+1;}} # move to next page if we've advanced far enough
 			}
+		elseif($curpos!="")
+			{
+			if (($go=="previous") && ($curpos>0)) {$ref=$result[$curpos-1]["ref"];}
+			if (($go=="next") && ($curpos<($n))) {$ref=$result[$curpos]["ref"];if (($curpos)>=($offset+72)) {$offset=$curpos+1;}} # move to next page if we've advanced far enough
+			}
 		else
 			{
 			?>
@@ -65,7 +71,7 @@ if ($go!="")
 			alert('<?php echo $lang["resourcenotinresults"] ?>');
 			</script>
 			<?php
-			}
+ 			}
 		}
     # Option to replace the key via a plugin (used by resourceconnect plugin).
     $newkey = hook("nextpreviewregeneratekey");
@@ -165,20 +171,198 @@ if ($metadata_report && isset($exiftool_path))
 	<?php
 	}
 
-
 if ($direct_download && !$save_as){
 ?>
 <iframe id="dlIFrm" frameborder=0 scrolling="auto" <?php if ($debug_direct_download){?>width="600" height="200"<?php } else { ?>width="0" height="0"<?php } ?>> This browser can not use IFRAME. </iframe>
 <?php }
 
+if($resource_contact_link && $k=="")
+		{?>
+		<script>
+		function showContactBox(){
+				
+				if(jQuery('#contactadminbox').length)
+					{
+					jQuery('#contactadminbox').slideDown();
+					return false;
+					}
+				
+				jQuery.ajax({
+						type: "GET",
+						url: baseurl_short+"pages/ajax/contactadmin.php?ref="+<?php echo $ref ?>+"&insert=true&ajax=true",
+						success: function(html){
+								jQuery('#RecordDownload li:last-child').after(html);
+								document.getElementById('messagetext').focus();
+								},
+						error: function(XMLHttpRequest, textStatus, errorThrown) {
+							alert('<?php echo $lang["error"] ?>\n' + textStatus);
+							}
+						});
+				}				
+		</script>
+		<?php
+		}
+		
 hook("pageevaluation");
 
 # Load resource field data
 $fields=get_resource_field_data($ref,false,!hook("customgetresourceperms"),-1,$k!="",$use_order_by_tab_view);
 
+
+//Check if we want to use a specified field as a caption below the preview
+if(isset($display_field_below_preview) && is_int($display_field_below_preview))
+	{
+	$df=0;
+	foreach ($fields as $field)
+		{
+		if($field["fref"]==$display_field_below_preview)
+			{
+			$displaycondition=check_display_condition($fields,$df);
+			if($displaycondition)
+				{
+				$previewcaption=$fields[$df];
+				// Remove from the array so we don't display it twice
+				unset($fields[$df]);
+				//Reorder array 
+				$fields=array_values($fields);				
+				}
+			}
+		$df++;			
+		}
+	}
+
 # Load edit access level (checking edit permissions - e0,e-1 etc. and also the group 'edit filter')
 $edit_access=get_edit_access($ref,$resource["archive"],$fields,$resource);
 if ($k!="") {$edit_access=0;}
+
+function check_display_condition($fields,$n)	
+	{
+	#Check if field has a display condition set
+	$displaycondition=true;
+	if ($fields[$n]["display_condition"]!="")
+		{
+		//echo $fields[$n]["display_condition"] . "<br>";
+		$fieldstocheck=array(); #' Set up array to use in jQuery script function
+		$s=explode(";",$fields[$n]["display_condition"]);
+		$condref=0;
+		foreach ($s as $condition) # Check each condition
+			{
+			$displayconditioncheck=false;
+			$s=explode("=",$condition);
+			for ($cf=0;$cf<count($fields);$cf++) # Check each field to see if needs to be checked
+				{
+				if ($s[0]==$fields[$cf]["name"]) # this field needs to be checked
+					{					
+					$checkvalues=$s[1];
+					$validvalues=explode("|",strtoupper($checkvalues));
+					$v=trim_array(explode(",",strtoupper($fields[$cf]["value"])));
+					foreach ($validvalues as $validvalue)
+						{
+						if (in_array($validvalue,$v)) {$displayconditioncheck=true;} # this is  a valid value						
+						}
+					if (!$displayconditioncheck) {$displaycondition=false;}					
+					}
+					
+				} # see if next field needs to be checked
+							
+			$condref++;
+			} # check next condition	
+		
+		}
+	return $displaycondition;
+	}
+	
+function display_field_data($field,$valueonly=false,$fixedwidth=452)
+	{
+	global $ref, $fieldcount, $tabcount, $show_expiry_warning, $access, $tabname, $search, $extra;
+	$value=$field["value"];
+	
+	# Handle expiry fields
+	if (!$valueonly && $field["type"]==6 && $value!="" && $value<=date("Y-m-d H:i") && $show_expiry_warning) 
+		{
+		$extra.="<div class=\"RecordStory\"> <h1>" . $lang["warningexpired"] . "</h1><p>" . $lang["warningexpiredtext"] . "</p><p id=\"WarningOK\"><a href=\"#\" onClick=\"document.getElementById('RecordDownload').style.display='block';document.getElementById('WarningOK').style.display='none';\">" . $lang["warningexpiredok"] . "</a></p></div><style>#RecordDownload {display:none;}</style>";
+		}
+	
+	if (($value!="") && ($value!=",") && ($field["display_field"]==1) && ($access==0 || ($access==1 && !$field["hide_when_restricted"])))
+		{
+		if (!$valueonly)
+			{$title=htmlspecialchars(str_replace("Keywords - ","",$field["title"]));}
+		else {$title="";}
+		//if ($field["type"]==4 || $field["type"]==6) {$value=NiceDate($value,false,true);}
+
+		# Value formatting
+		if (($field["type"]==2) || ($field["type"]==7) || ($field["type"]==9))
+			{$i18n_split_keywords =true;}
+		else 	{$i18n_split_keywords =false;}
+		$value=i18n_get_translated($value,$i18n_split_keywords );
+		if (($field["type"]==2) || ($field["type"]==3) || ($field["type"]==7) || ($field["type"]==9)) {$value=TidyList($value);}
+		$value_unformatted=$value; # store unformatted value for replacement also
+
+		if ($field["type"]!=8) # Do not convert HTML formatted fields (that are already HTML) to HTML.
+			{
+			$value=nl2br(htmlspecialchars($value));
+			}
+		
+		# draw new tab panel?
+		if (!$valueonly && ($tabname!=$field["tab_name"]) && ($fieldcount>0))
+			{
+			$tabcount++;
+			# Also display the custom formatted data $extra at the bottom of this tab panel.
+			?><div class="clearerleft"> </div><?php echo $extra?></div></div><div class="TabbedPanel StyledTabbedPanel" style="display:none;" id="tab<?php echo $tabcount?>"><div><?php	
+			$extra="";
+			}
+		$tabname=$field["tab_name"];
+		$fieldcount++;		
+
+		if (!$valueonly && trim($field["display_template"])!="")
+			{
+			# Process the value using a plugin
+			$plugin="../plugins/value_filter_" . $field["name"] . ".php";
+			if ($field['value_filter']!=""){
+				eval($field['value_filter']);
+			}
+			else if (file_exists($plugin)) {include $plugin;}
+			else if ($field["type"]==4 || $field["type"]==6) { 
+				$value=NiceDate($value,false,true);
+			}
+			
+			# Highlight keywords
+			$value=highlightkeywords($value,$search,$field["partial_index"],$field["name"],$field["keywords_index"]);
+
+			# Use a display template to render this field
+			$template=$field["display_template"];
+			$template=str_replace("[title]",$title,$template);
+			$template=str_replace("[value]",$value,$template);
+			$template=str_replace("[value_unformatted]",$value_unformatted,$template);
+			$template=str_replace("[ref]",$ref,$template);
+			$extra.=$template;
+			}
+		else
+			{
+			#There is a value in this field, but we also need to check again for a current-language value after the i18n_get_translated() function was called, to avoid drawing empty fields
+			if ($value!=""){
+				# Draw this field normally.				
+				
+					# value filter plugin should be used regardless of whether a display template is used.
+					$plugin="../plugins/value_filter_" . $field["name"] . ".php";
+					if ($field['value_filter']!=""){
+						eval($field['value_filter']);
+					}
+					else if (file_exists($plugin)) {include $plugin;}
+					else if ($field["type"]==4 || $field["type"]==6) { 
+						$value=NiceDate($value,false,true);
+					}
+				
+				# Highlight keywords
+				$value=highlightkeywords($value,$search,$field["partial_index"],$field["name"],$field["keywords_index"]);
+				?><div <?php if (!$valueonly){echo "class=\"itemNarrow\""; } elseif (isset($fixedwidth)) {echo "style=\"width:" . $fixedwidth . "px\""; } ?>>
+				<h3><?php echo $title?></h3><p><?php echo $value?></p></div><?php
+				}
+			}
+		}
+	
+	}
+
 ?>
 
 <!--Panel for record and details-->
@@ -193,7 +377,7 @@ if ($k!="") {$edit_access=0;}
 # Check if actually coming from a search, but not if a numeric search and config_search_for_number is set or if this is a direct request e.g. ?r=1234.
 if (isset($_GET["search"]) && !($config_search_for_number && is_numeric($usearch))) { ?>
 <div class="backtoresults">
-<a class="prevLink" href="<?php echo $baseurl_short?>pages/view.php?ref=<?php echo urlencode($ref)?>&search=<?php echo urlencode($search)?>&offset=<?php echo urlencode($offset)?>&order_by=<?php echo urlencode($order_by)?>&sort=<?php echo urlencode($sort)?>&archive=<?php echo urlencode($archive)?>&k=<?php echo urlencode($k) ?>&go=previous&<?php echo hook("nextpreviousextraurl") ?>" onClick="return CentralSpaceLoad(this);">&lt;&nbsp;<?php echo $lang["previousresult"]?></a>
+<a class="prevLink" href="<?php echo $baseurl_short?>pages/view.php?ref=<?php echo urlencode($ref)?>&search=<?php echo urlencode($search)?>&offset=<?php echo urlencode($offset)?>&order_by=<?php echo urlencode($order_by)?>&sort=<?php echo urlencode($sort)?>&archive=<?php echo urlencode($archive)?>&k=<?php echo urlencode($k) ?>&go=previous&curpos=<?php echo $curpos ?>&<?php echo hook("nextpreviousextraurl") ?>" onClick="return CentralSpaceLoad(this);">&lt;&nbsp;<?php echo $lang["previousresult"]?></a>
 <?php 
 if (!hook("viewallresults")) {
 ?>
@@ -201,7 +385,7 @@ if (!hook("viewallresults")) {
 <a class="upLink" href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&offset=<?php echo urlencode($offset)?>&order_by=<?php echo urlencode($order_by)?>&sort=<?php echo urlencode($sort)?>&archive=<?php echo urlencode($archive)?>&go=up&k=<?php echo urlencode($k)?>" onClick="return CentralSpaceLoad(this);"><?php echo $lang["viewallresults"]?></a>
 <?php } ?>
 |
-<a class="nextLink" href="<?php echo $baseurl_short?>pages/view.php?ref=<?php echo urlencode($ref)?>&search=<?php echo urlencode($search)?>&offset=<?php echo urlencode($offset)?>&order_by=<?php echo urlencode($order_by)?>&sort=<?php echo urlencode($sort)?>&archive=<?php echo urlencode($archive)?>&k=<?php echo urlencode($k)?>&go=next&<?php echo hook("nextpreviousextraurl") ?>" onClick="return CentralSpaceLoad(this);"><?php echo $lang["nextresult"]?>&nbsp;&gt;</a>
+<a class="nextLink" href="<?php echo $baseurl_short?>pages/view.php?ref=<?php echo urlencode($ref)?>&search=<?php echo urlencode($search)?>&offset=<?php echo urlencode($offset)?>&order_by=<?php echo urlencode($order_by)?>&sort=<?php echo urlencode($sort)?>&archive=<?php echo urlencode($archive)?>&k=<?php echo urlencode($k)?>&go=next&curpos=<?php echo $curpos ?>&<?php echo hook("nextpreviousextraurl") ?>" onClick="return CentralSpaceLoad(this);"><?php echo $lang["nextresult"]?>&nbsp;&gt;</a>
 </div>
 <?php } ?>
 
@@ -250,10 +434,18 @@ elseif (!(isset($resource['is_transcoding']) && $resource['is_transcoding']==1) 
 	{
 	# Include the Flash player if an FLV file exists for this resource.
 	$download_multisize=false;
-      if(!hook("customflvplay"))
-	      {
-          include "flv_play.php";
-	      }
+	?>
+	<div id="previewimagewrapper">
+	<?php 
+    if(!hook("customflvplay"))
+	    {
+        include "flv_play.php";
+	    }
+	if(isset($previewcaption))
+		{				
+		display_field_data($previewcaption, true);
+		}
+	?></div><?php
 	
 	# If configured, and if the resource itself is not an FLV file (in which case the FLV can already be downloaded), then allow the FLV file to be downloaded.
 	if ($flv_preview_downloadable && $resource["file_extension"]!="flv") {$flv_download=true;}
@@ -261,7 +453,18 @@ elseif (!(isset($resource['is_transcoding']) && $resource['is_transcoding']==1) 
 elseif ($use_mp3_player && file_exists($mp3realpath) && hook("custommp3player")){}	
 elseif ($resource['file_extension']=="swf" && $display_swf){
 	$swffile=get_resource_path($ref,true,"",false,"swf");
-	if (file_exists($swffile)) { include "swf_play.php";}	
+	if (file_exists($swffile))
+		{?>
+		<div id="previewimagewrapper">
+		<?php include "swf_play.php"; 
+		if(isset($previewcaption))
+			{
+			echo "<div class=\"clearerleft\"> </div>";					
+			display_field_data($previewcaption, true);
+			}
+		?>
+		</div><?php
+		}
 	}
 elseif ($resource["has_image"]==1)
 	{
@@ -283,7 +486,15 @@ elseif ($resource["has_image"]==1)
 		{ 
 		?><img src="<?php echo $imageurl?>" alt="<?php echo $lang["fullscreenpreview"]?>" class="Picture" GALLERYIMG="no" id="previewimage" /><?php 
 		} 
-	?></a></div><?php 
+	?></a><?php
+	if(isset($previewcaption))
+		{
+		echo "<div class=\"clearerleft\"> </div>";	
+		@list($pw) = @getimagesize($imagepath);
+		display_field_data($previewcaption, true, $pw);
+		}
+	
+	?></div><?php 
 	if ($image_preview_zoom)
 		{ 
 		$previewurl=get_resource_path($ref,false,"scr",false,$resource["preview_extension"],-1,1,$use_watermark);		
@@ -303,27 +514,40 @@ elseif ($resource["has_image"]==1)
 else
 	{
 	?>
+	<div id="previewimagewrapper">
 	<img src="<?php echo $baseurl ?>/gfx/<?php echo get_nopreview_icon($resource["resource_type"],$resource["file_extension"],false)?>" alt="" class="Picture" style="border:none;" id="previewimage" />
 	<?php
+	if(isset($previewcaption))
+		{	
+		echo "<div class=\"clearerleft\"> </div>";	
+		display_field_data($previewcaption, true);
+		}
+	?></div><?php	
 	}
 
 ?>
 <?php } /* End of renderinnerresourcepreview hook */ ?>
 <?php } /* End of replacerenderinnerresourcepreview hook */ ?>
-<?php hook("renderbeforerecorddownload");
+<?php
+
+
+
+hook("renderbeforerecorddownload");
 
 if ($download_summary) {include "../include/download_summary.php";}
 ?>
 <?php if (!hook("renderresourcedownloadspace")) { ?>
 <div class="RecordDownload" id="RecordDownload">
 <div class="RecordDownloadSpace">
-<?php if (!hook("renderinnerresourcedownloadspace")) { ?>
+<?php if (!hook("renderinnerresourcedownloadspace")) { 
+	hook("beforeresourcetoolsheader");
+?>
 <h2 id="resourcetools"><?php echo $lang["resourcetools"]?></h2>
 
 <?php 
 
 # DPI calculations
-function compute_dpi($size, &$dpi, &$dpi_unit, &$dpi_w, &$dpi_h)
+function compute_dpi($width, $height, &$dpi, &$dpi_unit, &$dpi_w, &$dpi_h)
 	{
 	global $lang, $imperial_measurements;
 	if (isset($size['resolution'])&& $size['resolution']!=0) { $dpi=$size['resolution']; }
@@ -333,35 +557,58 @@ function compute_dpi($size, &$dpi, &$dpi_unit, &$dpi_w, &$dpi_h)
 		{
 		# Imperial measurements
 		$dpi_unit=$lang["inch-short"];
-		$dpi_w=round(($size["width"]/$dpi),1);
-		$dpi_h=round(($size["height"]/$dpi),1);
+		$dpi_w=round($width/$dpi,1);
+		$dpi_h=round($height/$dpi,1);
 		}
 	else
 		{
 		$dpi_unit=$lang["centimetre-short"];
-		$dpi_w=round(($size["width"]/$dpi)*2.54,1);
-		$dpi_h=round(($size["height"]/$dpi)*2.54,1);
+		$dpi_w=round(($width/$dpi)*2.54,1);
+		$dpi_h=round(($height/$dpi)*2.54,1);
 		}
 	}
 
 # MP calculation
-function compute_megapixel($size)
+function compute_megapixel($width, $height)
 	{
-	return round(($size["width"]*$size["height"])/1000000,1);
+	return round(($width * $height) / 1000000, 1);
 	}
 
-function get_size_info($size)
+function get_size_info($size, $originalSize = null)
 {
 	global $lang;
-	$output='<p>' . $size["width"] . " x " . $size["height"] . " " . $lang["pixels"];
 
-	$mp=compute_megapixel($size);
+	$newWidth = intval($size['width']);
+	$newHeight = intval($size['height']);
+
+	if ($originalSize != null && $size !== $originalSize)
+		{
+		// Compute actual pixel size
+		$imageWidth = $originalSize['width'];
+		$imageHeight = $originalSize['height'];
+		if ($imageWidth > $imageHeight)
+			{
+			// landscape
+			$newWidth = $size['width'];
+			$newHeight = round(($imageHeight * $newWidth + $imageWidth - 1) / $imageWidth);
+			}
+		else
+			{
+			// portrait or square
+			$newHeight = $size['height'];
+			$newWidth = round(($imageWidth * $newHeight + $imageHeight - 1) / $imageHeight);
+			}
+		}
+
+	$output='<p>' . $newWidth . " x " . $newHeight . " " . $lang["pixels"];
+
+	$mp=compute_megapixel($newWidth, $newHeight);
 	if ($mp>=1)
 		{
 		$output.=" (" . $mp . " " . $lang["megapixel-short"] . ")";
 		}
 
-	compute_dpi($size, $dpi, $dpi_unit, $dpi_w, $dpi_h);
+	compute_dpi($newWidth, $newHeight, $dpi, $dpi_unit, $dpi_w, $dpi_h);
 
 	$output.='</p><p>';
 	$output.=$dpi_w . " " . $dpi_unit . " x " . $dpi_h . " " . $dpi_unit . " " . $lang["at-resolution"]
@@ -456,6 +703,7 @@ function add_download_column($ref, $size, $downloadthissize)
 		}
 	}
 
+
 # Look for a viewer to handle the right hand panel. If not, display the standard photo download / file download boxes.
 if (file_exists("../viewers/type" . $resource["resource_type"] . ".php"))
 	{
@@ -499,6 +747,10 @@ if ($resource["has_image"]==1 && $download_multisize)
 
 		$headline=$sizes[$n]['id']=='' ? str_replace_formatted_placeholder("%extension", $resource["file_extension"], $lang["originalfileoftype"])
 				: $sizes[$n]["name"];
+		$newHeadline=hook('replacesizelabel', '', array($ref, $resource, $sizes[$n]));
+		if (!empty($newHeadline))
+			$headline=$newHeadline;
+
 		if ($direct_link_previews && $downloadthissize)
 			$headline=make_download_preview_link($ref, $sizes[$n],$headline);
 		if ($hide_restricted_download_sizes && !$downloadthissize && !checkperm("q"))
@@ -750,7 +1002,9 @@ hook ("resourceactions") ?>
 		<li><a href="<?php echo $baseurl_short?>pages/edit.php?ref=<?php echo urlencode($ref)?>&search=<?php echo urlencode($search)?>&offset=<?php echo urlencode($offset)?>&order_by=<?php echo urlencode($order_by)?>&sort=<?php echo urlencode($sort)?>&archive=<?php echo urlencode($archive)?>"    onClick="return CentralSpaceLoad(this,true);">&gt; <?php echo $lang["action-edit"]?></a></li>
 		<?php if ($metadata_download)	{ ?>
 		<li><a href="<?php echo $baseurl_short?>pages/metadata_download.php?ref=<?php echo urlencode($ref)?>" onClick="return CentralSpaceLoad(this,true);" >&gt; <?php echo $lang["downloadmetadata"]?></a></li>
-	<?php } ?>
+	<?php } ?><?php if ($resource_contact_link)	{ ?>
+		<li><a href="<?php echo $baseurl_short?>pages/ajax/contactadmin.php?ref=<?php echo urlencode($ref)?>&search=<?php echo urlencode($search)?>&offset=<?php echo urlencode($offset)?>&order_by=<?php echo urlencode($order_by)?>&sort=<?php echo urlencode($sort)?>&archive=<?php echo urlencode($archive)?>" onClick="showContactBox();return false;" >&gt; <?php echo $lang["contactadmin"]?></a></li>
+	<?php } ?>	
 	<?php if ((!checkperm("D") || hook('check_single_delete')) && !(isset($allow_resource_deletion) && !$allow_resource_deletion)){?><li><a href="<?php echo $baseurl_short?>pages/delete.php?ref=<?php echo urlencode($ref)?>&search=<?php echo urlencode($search)?>&offset=<?php echo urlencode($offset)?>&order_by=<?php echo urlencode($order_by)?>&sort=<?php echo urlencode($sort)?>&archive=<?php echo urlencode($archive)?>" onClick="return CentralSpaceLoad(this,true);">&gt; <?php if ($resource["archive"]==3){echo $lang["action-delete_permanently"];} else {echo $lang["action-delete"];}?></a><?php } ?></li>
 	<?php if (!$disable_alternative_files && !checkperm('A')) { ?>
 	<li><a href="<?php echo $baseurl_short?>pages/alternative_files.php?ref=<?php echo urlencode($ref)?>&search=<?php echo urlencode($search)?>&offset=<?php echo urlencode($offset)?>&order_by=<?php echo urlencode($order_by)?>&sort=<?php echo urlencode($sort)?>&archive=<?php echo urlencode($archive)?>" onClick="return CentralSpaceLoad(this,true);">&gt;&nbsp;<?php echo $lang["managealternativefiles"]?></a></li><?php } ?>
@@ -794,6 +1048,7 @@ $extra="";
 #  -----------------------------  Draw tabs ---------------------------
 $tabname="";
 $tabcount=0;
+$tmp = hook("tweakfielddisp", "", array($ref, $fields)); if($tmp) $fields = $tmp;
 if (count($fields)>0 && $fields[0]["tab_name"]!="")
 	{ 
 	?>
@@ -863,134 +1118,17 @@ $tabname="";
 $tabcount=0;
 $fieldcount=0;
 $extra="";
-$tmp = hook("tweakfielddisp", "", array($ref, $fields)); if($tmp) $fields = $tmp;
+
 for ($n=0;$n<count($fields);$n++)
 	{
 	
-	#Check if field has a display condition set
-	$displaycondition=true;
-	if ($fields[$n]["display_condition"]!="")
-		{
-		//echo $fields[$n]["display_condition"] . "<br>";
-		$fieldstocheck=array(); #' Set up array to use in jQuery script function
-		$s=explode(";",$fields[$n]["display_condition"]);
-		$condref=0;
-		foreach ($s as $condition) # Check each condition
-			{
-			$displayconditioncheck=false;
-			$s=explode("=",$condition);
-			for ($cf=0;$cf<count($fields);$cf++) # Check each field to see if needs to be checked
-				{
-				if ($s[0]==$fields[$cf]["name"]) # this field needs to be checked
-					{					
-					$checkvalues=$s[1];
-					$validvalues=explode("|",strtoupper($checkvalues));
-					$v=trim_array(explode(",",strtoupper($fields[$cf]["value"])));
-					foreach ($validvalues as $validvalue)
-						{
-						if (in_array($validvalue,$v)) {$displayconditioncheck=true;} # this is  a valid value						
-						}
-					if (!$displayconditioncheck) {$displaycondition=false;}					
-					}
-					
-				} # see if next field needs to be checked
-							
-			$condref++;
-			} # check next condition	
-		
-		}	
-	
-	
-	
-	
-	
+	$displaycondition=check_display_condition($fields,$n);	
 	
 	if ($displaycondition)
 		{
-		if (!hook("renderfield")) {
-			$value=$fields[$n]["value"];
-			
-			# Handle expiry fields
-			if ($fields[$n]["type"]==6 && $value!="" && $value<=date("Y-m-d H:i") && $show_expiry_warning) 
-				{
-				$extra.="<div class=\"RecordStory\"> <h1>" . $lang["warningexpired"] . "</h1><p>" . $lang["warningexpiredtext"] . "</p><p id=\"WarningOK\"><a href=\"#\" onClick=\"document.getElementById('RecordDownload').style.display='block';document.getElementById('WarningOK').style.display='none';\">" . $lang["warningexpiredok"] . "</a></p></div><style>#RecordDownload {display:none;}</style>";
-				}
-			
-			if (($value!="") && ($value!=",") && ($fields[$n]["display_field"]==1) && ($access==0 || ($access==1 && !$fields[$n]["hide_when_restricted"])))
-				{
-				$title=htmlspecialchars(str_replace("Keywords - ","",$fields[$n]["title"]));
-				//if ($fields[$n]["type"]==4 || $fields[$n]["type"]==6) {$value=NiceDate($value,false,true);}
-
-				# Value formatting
-				if (($fields[$n]["type"]==2) || ($fields[$n]["type"]==7) || ($fields[$n]["type"]==9))
-					{$i18n_split_keywords =true;}
-				else 	{$i18n_split_keywords =false;}
-				$value=i18n_get_translated($value,$i18n_split_keywords );
-				if (($fields[$n]["type"]==2) || ($fields[$n]["type"]==3) || ($fields[$n]["type"]==7) || ($fields[$n]["type"]==9)) {$value=TidyList($value);}
-				$value_unformatted=$value; # store unformatted value for replacement also
-
-				if ($fields[$n]["type"]!=8) # Do not convert HTML formatted fields (that are already HTML) to HTML.
-					{
-					$value=nl2br(htmlspecialchars($value));
-					}
-				
-				# draw new tab panel?
-				if (($tabname!=$fields[$n]["tab_name"]) && ($fieldcount>0))
-					{
-					$tabcount++;
-					# Also display the custom formatted data $extra at the bottom of this tab panel.
-					?><div class="clearerleft"> </div><?php echo $extra?></div></div><div class="TabbedPanel StyledTabbedPanel" style="display:none;" id="tab<?php echo $tabcount?>"><div><?php	
-					$extra="";
-					}
-				$tabname=$fields[$n]["tab_name"];
-				$fieldcount++;		
-
-				if (trim($fields[$n]["display_template"])!="")
-					{
-					# Process the value using a plugin
-					$plugin="../plugins/value_filter_" . $fields[$n]["name"] . ".php";
-					if ($fields[$n]['value_filter']!=""){
-						eval($fields[$n]['value_filter']);
-					}
-					else if (file_exists($plugin)) {include $plugin;}
-					else if ($fields[$n]["type"]==4 || $fields[$n]["type"]==6) { 
-						$value=NiceDate($value,false,true);
-					}
-					
-					# Highlight keywords
-					$value=highlightkeywords($value,$search,$fields[$n]["partial_index"],$fields[$n]["name"],$fields[$n]["keywords_index"]);
-
-					# Use a display template to render this field
-					$template=$fields[$n]["display_template"];
-					$template=str_replace("[title]",$title,$template);
-					$template=str_replace("[value]",$value,$template);
-					$template=str_replace("[value_unformatted]",$value_unformatted,$template);
-					$template=str_replace("[ref]",$ref,$template);
-					$extra.=$template;
-					}
-				else
-					{
-					#There is a value in this field, but we also need to check again for a current-language value after the i18n_get_translated() function was called, to avoid drawing empty fields
-					if ($value!=""){
-						# Draw this field normally.
-						
-						
-							# value filter plugin should be used regardless of whether a display template is used.
-							$plugin="../plugins/value_filter_" . $fields[$n]["name"] . ".php";
-							if ($fields[$n]['value_filter']!=""){
-								eval($fields[$n]['value_filter']);
-							}
-							else if (file_exists($plugin)) {include $plugin;}
-							else if ($fields[$n]["type"]==4 || $fields[$n]["type"]==6) { 
-								$value=NiceDate($value,false,true);
-							}
-						
-						# Highlight keywords
-						$value=highlightkeywords($value,$search,$fields[$n]["partial_index"],$fields[$n]["name"],$fields[$n]["keywords_index"]);
-						?><div class="itemNarrow"><h3><?php echo $title?></h3><p><?php echo $value?></p></div><?php
-						}
-					}
-				}
+		if (!hook("renderfield")) 
+			{
+			display_field_data($fields[$n]);
 			}
 		}
 	}
@@ -1010,7 +1148,7 @@ for ($n=0;$n<count($fields);$n++)
 if (!$disable_geocoding) { 
   // only show this section if the resource is geocoded OR they have permission to do it themselves
   if ($edit_access||($resource["geo_lat"]!="" && $resource["geo_long"]!=""))
-  		{ 
+  		{
 		include "../include/geocoding_view.php";
 	  	} 
  	} 
