@@ -4,7 +4,7 @@ include "../include/authenticate.php";
 include "../include/general.php";
 include "../include/resource_functions.php";
 include "../include/image_processing.php";
-include "../plugins/mediaapi/functions.php";
+include "../plugins/mediaapi/stdlib.php";
 
 $ref=getvalescaped("ref","",true);
 
@@ -71,11 +71,6 @@ include "../include/header.php";
 
 <div class="Question">
 <label><?php echo $lang["resourceid"]?></label><div class="Fixed"><?php echo htmlspecialchars($resource) ?></div>
-<div class="clearerleft"> </div>
-</div>
-
-<div class="Question">
-<label for="name"><?php echo $lang["name"]?></label><input type=text class="stdwidth" name="ordinal" id="ordinal" value="<?php echo htmlspecialchars(1) ?>" maxlength="10">
 <div class="clearerleft"> </div>
 </div>
 

@@ -1,7 +1,6 @@
 <?php
 $mediaroot = dirname(dirname(__FILE__));
 include_once $mediaroot . '/stdlib.php';
-include_once $mediaroot . '/functions.php';
 
 /**
  * Hook to group all resources
@@ -48,6 +47,7 @@ function HookMediaapiAllAfternewresource($ref)
 
 function HookMediaapiAllUploadfilesuccess($ref)
 {
+    global $storagedir;
     //var_dump(get_resource_files($ref));die;
     $res_data = get_resource_data($ref);
     $res_path = get_resource_path($ref, true, "", false, $res_data['file_extension'], -1, 1, false, "");
@@ -82,22 +82,15 @@ function HookMediaapiAllUploadfilesuccess($ref)
 	# Update disk usage
 	update_disk_usage($new_alt_resource);
 
+    // insert the derivative data
+    $derivative = mediaapi_generate_derivative_metadata($ref, $new_alt_resource);
+    $derivative['ordinal']    = 1;
+    $derivative['is_primary'] = 'y';
 
-    //save_alternative_file($ref, $new_resource);
+    mediaapi_upsert_derivative_resources($new_alt_resource, $derivative);
 }
 
 function HookMediaapiAllPost_savealternativefile($ref)
 {
-    $data = array();
-    $data['short_name']      = getvalescaped("short_name", "");
-    $data['prefix']          = getvalescaped("prefix", "");
-    $data['file_path']       = getvalescaped("file_path", "");
-    $data['file_name']       = getvalescaped("file_name", "");
-    $data['file_extension']  = getvalescaped("file_extension", "");
-    $data['use_extension']   = getvalescaped("use_extension", "");
-    $data['is_downloadable'] = getvalescaped("is_downloadable", "");
-    $data['is_streamable']   = getvalescaped("is_streamable", "");
-    $data['is_primary']      = getvalescaped("is_primary", "");
-
-    mediaapi_upsert_derivative_resources($ref, $data);
+    mediaapi_upsert_derivative_resources($ref, mediaapi_collect_derivative_data());
 }
