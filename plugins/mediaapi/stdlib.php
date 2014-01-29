@@ -1,4 +1,8 @@
 <?php
+/**
+ * Is the session already started?
+ * @return boolean
+ */
 function mediaapi_is_session_started()
 {
     if ( php_sapi_name() !== 'cli' ) {
@@ -11,6 +15,11 @@ function mediaapi_is_session_started()
     return FALSE;
 }
 
+/**
+ * Starts a php session
+ * @param void
+ * @return null
+ */
 function mediaapi_session_start()
 {
     if (mediaapi_is_session_started() === FALSE) {
@@ -28,6 +37,12 @@ function mediaapi_get_derivative_resources($ref)
     return sql_query("SELECT * FROM mediaapi_derivatives WHERE alt_file_id='" . $ref . "'");
 }
 
+/**
+ * Insert or update derivative data to mediaapi_derivatives table
+ *
+ * @param string $ref
+ * @param array $data
+ */
 function mediaapi_upsert_derivative_resources($ref, array $data)
 {
     $update = "alt_file_id='{$ref}', ";
@@ -41,26 +56,33 @@ function mediaapi_upsert_derivative_resources($ref, array $data)
                ON DUPLICATE KEY UPDATE " . $update);
 }
 
-function mediaapi_generate_derivative_metadata($ref, $dir_res = -1)
+/**
+ * Generate a derivate metadata
+ *
+ * @param string $ref            Resource id
+ * @param string $derivative_ref Derivate id/Alternative id
+ * @return array
+ */
+function mediaapi_generate_derivative_metadata($ref, $derivative_ref = -1)
 {
     global $storagedir;
 
-    $file_data     = ($dir_res !== -1) ? get_alternative_file($ref, $dir_res) : null;
+    $file_data     = ($derivative_ref !== -1) ? get_alternative_file($ref, $derivative_ref) : null;
     $res_data      = get_resource_data($ref);
-    $dir_file_path = get_resource_path($ref, true, "", false, $res_data['file_extension'], -1, 1, false, "", $dir_res);
+    $dir_file_path = get_resource_path($ref, true, "", false, $res_data['file_extension'], -1, 1, false, "", $derivative_ref);
 
-    $filename_rootpath = ltrim(str_replace($storagedir, '', $dir_file_path), '/');
+    $filename_rootpath = trim(str_replace($storagedir, '', $dir_file_path), '/ ');
     $filename  = substr($filename_rootpath, (strrpos($filename_rootpath, '/') + 1));
-    $extension = substr($filename, (strrpos($filename, '.') + 1));
+    $extension = $res_data['file_extension'] ?: substr($filename, (strrpos($filename, '.') + 1));
 
     $return = array();
 
     if (!empty($file_data['name'])) {
-        $return['short_name'] = str_replace(".{$file_data['file_extension']}", '', $file_data['name']);
+        $return['short_name'] = str_replace(".{$extension}", '', $file_data['name']);
     }
 
-    $return['prefix']          = $res_data['file_extension'];
-    $return['file_path']       = rtrim(str_replace($filename, '', $filename_rootpath), '/');
+    $return['prefix']          = $extension;
+    $return['file_path']       = trim(str_replace($filename, '', $filename_rootpath), '/ ');
     $return['file_name']       = str_replace(".{$extension}", '', $filename);
     $return['file_extension']  = $extension;
     $return['use_extension']   = ($extension === 'mp4') ? 'y' : 'n';
@@ -74,7 +96,7 @@ function mediaapi_generate_derivative_metadata($ref, $dir_res = -1)
  * Gather derivative data.
  * Checks for php globals first then defaults to $data if it exists
  *
- * @param  array $data
+ * @param  array $data Data seed
  * @return array
  */
 function mediaapi_collect_derivative_data(array $data = null)
@@ -91,4 +113,20 @@ function mediaapi_collect_derivative_data(array $data = null)
     $derivative['is_primary']      = getvalescaped("is_primary", (isset($data['is_primary']) ? $data['is_primary'] : ""));
 
     return $derivative;
+}
+
+/**
+ * Inserts derivative data to the mediaapi_derivatives table
+ *
+ * @param string $resource_ref    The resource id/primary key
+ * @param string $derivative_ref  Derivative id/Alternative id
+ * @param int    $ordinal         Ordinal for the derivative
+ */
+function mediaapi_insert_derivative_data($resource_ref, $derivative_ref, $ordinal = 1)
+{
+    $data = mediaapi_generate_derivative_metadata($resource_ref, $derivative_ref);
+    $data['ordinal']    = $ordinal;
+    $data['is_primary'] = ($ordinal === 1) ? 'y' : 'n';
+
+    mediaapi_upsert_derivative_resources($derivative_ref, $data);
 }

@@ -1,6 +1,16 @@
 <?php
 include_once dirname(dirname(__FILE__)) . '/stdlib.php';
 
+/**
+ * This hook will seed the mediaapi session data
+ * and prep it for upload of new resources. The hook will
+ * enable RS to have the ability for having resource uploads as
+ * related resources since the actuall upload process is done in a
+ * separate ajax instance hence losing the ability to create related resources.
+ *
+ * @param  void
+ * @return null
+ */
 function HookMediaapiEditeditbeforesave()
 {
     $save = getval("save", null);

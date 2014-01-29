@@ -3,8 +3,11 @@ $mediaroot = dirname(dirname(__FILE__));
 include_once $mediaroot . '/stdlib.php';
 
 /**
- * Hook to group all resources
+ * This hook will create the current session upload of resources
+ * as a group of related resources automatically.
+ *
  * @param string $ref Resource reference ID
+ * @return null
  */
 function HookMediaapiAllAfternewresource($ref)
 {
@@ -45,6 +48,15 @@ function HookMediaapiAllAfternewresource($ref)
     }
 }
 
+/**
+ * This hook will automatically create the first uploaded resource
+ * as an alternative/derivative file in RS. In addition, it will also
+ * populate the derivative information automatically based on mediaapi's
+ * derivative requirement.
+ *
+ * @param string $ref
+ * @return null
+ */
 function HookMediaapiAllUploadfilesuccess($ref)
 {
     global $storagedir;
@@ -83,13 +95,16 @@ function HookMediaapiAllUploadfilesuccess($ref)
 	update_disk_usage($new_alt_resource);
 
     // insert the derivative data
-    $derivative = mediaapi_generate_derivative_metadata($ref, $new_alt_resource);
-    $derivative['ordinal']    = 1;
-    $derivative['is_primary'] = 'y';
-
-    mediaapi_upsert_derivative_resources($new_alt_resource, $derivative);
+    mediaapi_insert_derivative_data($ref, $new_alt_resource);
 }
 
+/**
+ * This hook will save the alternative metadata to the mediaapi_derivatives
+ * table by collecting data to from http global vars in php.
+ *
+ * @param string $ref
+ * @return null
+ */
 function HookMediaapiAllPost_savealternativefile($ref)
 {
     mediaapi_upsert_derivative_resources($ref, mediaapi_collect_derivative_data());
