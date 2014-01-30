@@ -1582,7 +1582,7 @@ function save_alternative_file($resource,$ref)
 	update_disk_usage($resource);
 
 	# manual hook
-	hook("post_savealternativefile", "", array($ref));
+	hook("post_savealternativefile", "", array($ref, $resource));
 	}
 
 if (!function_exists("user_rating_save")){
