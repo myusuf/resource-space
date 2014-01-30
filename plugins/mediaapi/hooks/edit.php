@@ -11,7 +11,7 @@ include_once dirname(dirname(__FILE__)) . '/stdlib.php';
  * @param  void
  * @return null
  */
-function HookMediaapiEditeditbeforesave()
+function HookMediaapiEditEditbeforesave()
 {
     $save = getval("save", null);
     if (null === $save) {

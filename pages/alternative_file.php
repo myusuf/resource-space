@@ -104,12 +104,12 @@ include "../include/header.php";
 <input type=file name=userfile id=userfile size="80">
 <div class="clearerleft"> </div>
 </div>
-
+<?php if ($mediaapi_derivatives !== null) : ?>
 <h1>Dirivative Specific</h1>
 
 <div class="Question">
 <label>Derivative ID</label><div class="Fixed">
-    <?php $derivative_id = !empty($mediaapi_derivatives['derivative_id']) ? $mediaapi_derivatives['derivative_id'] : ''; ?>
+    <?php $derivative_id = !empty($mediaapi_derivatives['derivative_id']) ? $mediaapi_derivatives['derivative_id'] : 'not published'; ?>
     <input type="hidden" name="derivative" value="<?php echo $derivative_id; ?>">
     <?php echo htmlspecialchars($derivative_id); ?>
 </div>
@@ -117,12 +117,18 @@ include "../include/header.php";
 </div>
 
 <div class="Question">
-<label>Media Object ID</label><div class="Fixed"><?php echo !empty($mediaapi_derivatives['media_object_id']) ? $mediaapi_derivatives['media_object_id'] : ''; ?></div>
+<label>Media Object ID</label><div class="Fixed"><?php echo !empty($mediaapi_derivatives['media_object_id']) ? $mediaapi_derivatives['media_object_id'] : 'not published'; ?></div>
 <div class="clearerleft"> </div>
 </div>
 
 <div class="Question">
-<label>Media Server ID</label><div class="Fixed"><?php echo !empty($mediaapi_derivatives['media_server_id']) ? $mediaapi_derivatives['media_server_id'] : ''; ?></div>
+<label>Media Server ID</label><div class="Fixed"><?php echo !empty($mediaapi_derivatives['media_server_id']) ? $mediaapi_derivatives['media_server_id'] : 'not published'; ?></div>
+<div class="clearerleft"> </div>
+</div>
+
+<div class="Question">
+<?php $ordinal = !empty($mediaapi_derivatives['ordinal']) ? $mediaapi_derivatives['ordinal'] : ''; ?>
+<label for="name">Ordinal</label><input type=text class="stdwidth" name="ordinal" id="ordinal" value="<?php echo htmlspecialchars($ordinal); ?>" maxlength="100">
 <div class="clearerleft"> </div>
 </div>
 
@@ -134,47 +140,39 @@ include "../include/header.php";
 
 <div class="Question">
 <?php $prefix = !empty($mediaapi_derivatives['prefix']) ? $mediaapi_derivatives['prefix'] : ''; ?>
-<label for="name">Prefix</label><input type=text class="stdwidth" name="prefix" id="prefix" value="<?php echo htmlspecialchars($prefix) ?>" maxlength="100">
+<label for="name">Prefix</label><?php echo htmlspecialchars($prefix) ?>
 <div class="clearerleft"> </div>
 </div>
 
 <div class="Question">
 <?php $file_path = !empty($mediaapi_derivatives['file_path']) ? $mediaapi_derivatives['file_path'] : ''; ?>
-<label for="name">File path</label><input type=text class="stdwidth" name="file_path" id="file_path" value="<?php echo htmlspecialchars($file_path) ?>" maxlength="100">
+<label for="name">File path</label><?php echo htmlspecialchars($file_path) ?>
 <div class="clearerleft"> </div>
 </div>
 
 <div class="Question">
 <?php $file_name = !empty($mediaapi_derivatives['file_name']) ? $mediaapi_derivatives['file_name'] : ''; ?>
-<label for="name">File name</label><input type=text class="stdwidth" name="file_name" id="file_name" value="<?php echo htmlspecialchars($file_name) ?>" maxlength="100">
+<label for="name">File name</label><?php echo htmlspecialchars($file_name) ?>
 <div class="clearerleft"> </div>
 </div>
 
 <div class="Question">
 <?php $file_extension = !empty($mediaapi_derivatives['file_extension']) ? $mediaapi_derivatives['file_extension'] : ''; ?>
-<label for="name">File extension</label><input type=text class="stdwidth" name="file_extension" id="file_extension" value="<?php echo htmlspecialchars($file_extension) ?>" maxlength="100">
+<label for="name">File extension</label><?php echo htmlspecialchars($file_extension) ?>
 <div class="clearerleft"> </div>
 </div>
 
 <div class="Question">
 <label for="name">Use extension</label>
     <?php $use_extension = !empty($mediaapi_derivatives['use_extension']) ? $mediaapi_derivatives['use_extension'] : ''; ?>
-    <select class="stdwidth" name="use_extension" id="use_extension">
-       <option <?php echo ($use_extension == '')  ? 'selected="selected"' : ''; ?> value=""></option>
-       <option <?php echo ($use_extension == 'n') ? 'selected="selected"' : ''; ?> value="n">No</option>
-	   <option <?php echo ($use_extension == 'y') ? 'selected="selected"' : ''; ?> value="y">Yes</option>
-	</select>
+    <?php echo $use_extension == 'y' ? 'yes' : 'no'; ?>
 <div class="clearerleft"> </div>
 </div>
 
 <div class="Question">
 <label for="name">Is downloadable</label>
     <?php $is_downloadable = !empty($mediaapi_derivatives['is_downloadable']) ? $mediaapi_derivatives['is_downloadable'] : ''; ?>
-    <select class="stdwidth" name="is_downloadable" id="is_downloadable">
-       <option <?php echo ($is_downloadable == '')   ? 'selected="selected"' : ''; ?> value=""></option>
-       <option <?php echo ($is_downloadable == 'n')  ? 'selected="selected"' : ''; ?> value="n">No</option>
-	   <option <?php echo ($is_downloadable == 'y')  ? 'selected="selected"' : ''; ?> value="y">Yes</option>
-	</select>
+    <?php echo $is_downloadable == 'y' ? 'yes' : 'no'; ?>
 <div class="clearerleft"> </div>
 </div>
 
@@ -192,14 +190,10 @@ include "../include/header.php";
 <div class="Question">
 <label for="name">Is primary</label>
     <?php $is_primary = !empty($mediaapi_derivatives['is_primary']) ? $mediaapi_derivatives['is_primary'] : ''; ?>
-    <select class="stdwidth" name="is_primary" id="is_primary">
-       <option <?php echo ($is_primary == '')   ? 'selected="selected"' : ''; ?> value=""></option>
-       <option <?php echo ($is_primary == 'n')  ? 'selected="selected"' : ''; ?> value="n">No</option>
-	   <option <?php echo ($is_primary == 'y')  ? 'selected="selected"' : ''; ?> value="y">Yes</option>
-	</select>
+    <?php echo $is_primary == 'y' ? 'yes' : 'no'; ?>
 <div class="clearerleft"> </div>
 </div>
-
+<?php endif; ?>
 <div class="QuestionSubmit">
 <label for="buttons"> </label>
 <input name="save" type="submit" value="&nbsp;&nbsp;<?php echo $lang["save"]?>&nbsp;&nbsp;" />
