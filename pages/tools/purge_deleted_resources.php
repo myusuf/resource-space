@@ -1,7 +1,8 @@
 <?php
+error_reporting(E_ALL);
 // Script to purge all resources in the deletion state (status 3)
 // set following line to true to enable this script
-$PURGE_ENABLED = false;
+$PURGE_ENABLED = true;
 
 
 
@@ -16,11 +17,11 @@ if (substr($sapi_type, 0, 3) != 'cli') {
 echo "error - aborting.";
 exit;
 }
-include "../../include/db.php";
-include "../../include/general.php";
-include "../../include/resource_functions.php";
-include "../../include/image_processing.php";
 
+include realpath(dirname(__FILE__) . '/../../include/db.php');
+include realpath(dirname(__FILE__) . '/../../include/general.php');
+include realpath(dirname(__FILE__) . '/../../include/resource_functions.php');
+include realpath(dirname(__FILE__) . '/../../include/image_processing.php');
 
 // restore the default system error handler
 // so that we can handle things like permission errors
