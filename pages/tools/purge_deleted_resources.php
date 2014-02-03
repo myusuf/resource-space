@@ -1,7 +1,7 @@
 <?php
 // Script to purge all resources in the deletion state (status 3)
 // set following line to true to enable this script
-$PURGE_ENABLED = false;
+$PURGE_ENABLED = true;
 
 
 
@@ -25,7 +25,7 @@ include "../../include/image_processing.php";
 // restore the default system error handler
 // so that we can handle things like permission errors
 // on our own.
-restore_error_handler();
+//restore_error_handler();
 
 // make darn sure the user knows what they are doing!
 echo "\nResourceSpace Purge Script\n\n";
