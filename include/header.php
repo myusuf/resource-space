@@ -165,7 +165,6 @@ jQuery(document).ready(function() {
     }
     else
     { 
-        
          switch (e.which) 
          {
 			 
@@ -208,7 +207,7 @@ jQuery(document).ready(function() {
                      break;
             case <?php echo $keyboard_navigation_all_results; ?>: if (jQuery('.upLink').length > 0) jQuery('.upLink').click();
                      break;
-            case <?php echo $keyboard_navigation_toggle_previews; ?>: if (jQuery('.hideLink').length > 0) jQuery('.hideLink').click();
+            case <?php echo $keyboard_navigation_toggle_thumbnails; ?>: if (jQuery('#toggleThumbsLink').length > 0) jQuery('#toggleThumbsLink').click();
                      break;
             case <?php echo $keyboard_navigation_zoom; ?>: if (jQuery('.enterLink').length > 0) window.location=jQuery('.enterLink').attr("href");
                      break;
@@ -282,7 +281,16 @@ if ($pagename=="login" || $pagename=="user_request" || $pagename=="user_password
 ?>
 
 <div id="Header" <?php if ($header_text_title){?>style="background:none;"<?php } ?>>
-<?php if ($header_link && !$header_text_title && getval("k","")==""){?><a class="headerlink" href="<?php echo isset($header_link_url) ? $header_link_url : $homepage_url?>"  onClick="return CentralSpaceLoad(this,true);"></a><?php } ?>
+<?php if ($header_link && !$header_text_title && getval("k","")=="") {
+	$linkUrl=isset($header_link_url) ? $header_link_url : $homepage_url;
+	if (substr($linkUrl, 0, strlen($baseurl)) === $baseurl
+			|| substr($linkUrl, 0, strlen($baseurl_short)) === $baseurl_short)
+		$onclick=' onclick="return CentralSpaceLoad(this,true);"';
+	else
+		$onclick='';
+	?><a class="headerlink" href="<?php echo $linkUrl ?>"<?php echo $onclick?>></a><?php
+}
+?>
 <?php if ($header_text_title){?>
     <div id="TextHeader"><?php if (getval("k","")==""){?><a href="<?php echo $homepage_url?>"  onClick="return CentralSpaceLoad(this,true);"><?php } ?><?php echo $applicationname;?><?php if (getval("k","")==""){?></a><?php } ?></div>
     <?php if ($applicationdesc!=""){?>

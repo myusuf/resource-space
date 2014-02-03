@@ -30,7 +30,7 @@ include "../include/header.php";
 
 <div class="BasicsBox">
 
-<form method=post action="<?php echo $baseurl_short?>pages/download_usage.php<?php echo $download_url_suffix ?>" onSubmit="if ((jQuery('#usagecomment').val()=='') || (jQuery('#usage').val()=='')) {alert('<?php echo $lang["usageincorrect"] ?>');return false;} else {return CentralSpacePost(this,true);}">
+<form method=post action="<?php echo $baseurl_short?>pages/download_usage.php<?php echo $download_url_suffix ?>" onSubmit="if (  <?php if (!$usage_comment_blank) { ?>  (jQuery('#usagecomment').val()=='') ||<?php } ?>     (jQuery('#usage').val()=='')) {alert('<?php echo $lang["usageincorrect"] ?>');return false;} else {return CentralSpacePost(this,true);}">
 <input type="hidden" name="ref" value="<?php echo htmlspecialchars($ref) ?>" />
 <input type="hidden" name="size" value="<?php echo htmlspecialchars($size) ?>" />
 <input type="hidden" name="ext" value="<?php echo htmlspecialchars($ext) ?>" />
@@ -40,7 +40,7 @@ include "../include/header.php";
 <h1><?php echo $lang["usage"]?></h1>
 <p><?php echo $lang["indicateusage"]?></p>
 
-<div class="Question"><label><?php echo $lang["usage"]?></label><textarea rows="5" name="usagecomment" id="usagecomment" type="text" class="stdwidth"></textarea><div class="clearerleft"> </div></div>
+<?php if(!$remove_usage_textbox && !$usage_textbox_below) { ?><div class="Question"><label><?php echo $lang["usagecomments"]?></label><textarea rows="5" name="usagecomment" id="usagecomment" type="text" class="stdwidth"></textarea><div class="clearerleft"> </div></div> <?php } ?>
 
 <div class="Question"><label><?php echo $lang["indicateusagemedium"]?></label>
 <select class="stdwidth" name="usage" id="usage">
@@ -49,12 +49,14 @@ include "../include/header.php";
 for ($n=0;$n<count($download_usage_options);$n++)
 	{
 	?>
-	<option value="<?php echo $n; ?>"><?php echo htmlspecialchars($download_usage_options[$n]) ?></option>	
+	<option value="<?php echo $n; ?>"><?php echo htmlspecialchars($download_usage_options[$n]) ?></option>
 	<?php
 	}
 ?>
 </select>
 <div class="clearerleft"> </div></div>
+
+<?php if ($usage_textbox_below && !$remove_usage_textbox) { ?> <div class="Question"><label><?php echo $lang["usagecomments"]?></label><textarea rows="5" name="usagecomment" id="usagecomment" type="text" class="stdwidth"></textarea><div class="clearerleft"> </div></div> <?php } ?>
 
 
 <div class="QuestionSubmit">

@@ -1,0 +1,1 @@
+mediaapi_derivatives,0,PRIMARY,1,alt_file_id,A,0,,,,BTREE,,
