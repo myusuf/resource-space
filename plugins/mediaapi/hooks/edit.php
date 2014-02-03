@@ -55,3 +55,22 @@ function HookMediaapiEditEditbeforesave()
         $_SESSION['mediaapi_newresource_groupinsert_session'] = null;
     }
 }
+
+function HookMediaapiEditReplacesubmitbuttons()
+{
+    global $multiple, $lang, $ref;
+
+	echo '<div class="QuestionSubmit">';
+	echo '<input name="resetform" type="submit" value="' . $lang['clearbutton'] . '" />&nbsp;';
+    echo '<input ' . (($multiple) ? 'onclick="return confirm(\'' . $lang["confirmeditall"] .'\');' : "") . 'name="save" type="submit" value="&nbsp;&nbsp;' . (($ref > 0) ? $lang["save"] : $lang["next"]) . '&nbsp;&nbsp;" /><br><br>';
+    echo '<div class="clearerleft"> </div>';
+	echo '</div>';
+
+	echo '<div class="QuestionSubmit">';
+	echo 'Publish/Synchronize with LOC Media Resource:<br /><br />';
+	echo '<input name="publish" type="submit" value="Publish" onclick="return confirm(\'Are you sure you want to push the changes to the media resource?\')" />&nbsp;';
+    echo '<div class="clearerleft"> </div>';
+    echo '</div>';
+
+	return true;
+}

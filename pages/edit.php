@@ -1,6 +1,6 @@
 <?php
 include "../include/db.php";
-include "../include/authenticate.php"; 
+include "../include/authenticate.php";
 include "../include/general.php";
 include "../include/resource_functions.php";
 include "../include/collections_functions.php";
@@ -35,10 +35,10 @@ $go=getval("go","");
 if ($go!="")
 	{
 	# Re-run the search and locate the next and previous records.
-	$modified_result_set=hook("modifypagingresult"); 
+	$modified_result_set=hook("modifypagingresult");
 	if ($modified_result_set){
 		$result=$modified_result_set;
-	} else {	
+	} else {
 		$result=do_search($search,$restypes,$order_by,$archive,240+$offset+1,$sort);
 	}
 	if (is_array($result))
@@ -66,7 +66,7 @@ if ($go!="")
 	}
 
 $collection=getvalescaped("collection","",true);
-if ($collection!="") 
+if ($collection!="")
 	{
 	# If editing multiple items, use the first resource as the template
 	$multiple=true;
@@ -77,7 +77,7 @@ if ($collection!="")
 		error_alert($error);
 		exit();
 	}
-	
+
 	# check editability
 	if (!allow_multi_edit($collection)){
 		$error=$lang['error-permissiondenied'];
@@ -132,7 +132,7 @@ hook("editbeforeheader");
 # -----------------------------------
 if ((getval("autosave","")!="") || (getval("tweak","")=="" && getval("submitted","")!="" && getval("resetform","")=="" && getval("copyfromsubmit","")==""))
 	{
-	hook("editbeforesave");			
+	hook("editbeforesave");
 
 	# save data
 	if (!$multiple)
@@ -144,21 +144,21 @@ if ((getval("autosave","")!="") || (getval("tweak","")=="" && getval("submitted"
 			{
 			update_resource_type($ref,$resource_type);
 			$resource=get_resource_data($ref,false); # Reload resource data.
-			}		
+			}
 
 		$save_errors=save_resource_data($ref,$multiple);
 		$no_exif=getval("no_exif",($metadata_read_default)?"":"yes");
 		$autorotate = getval("autorotate","");
 
 		if ($upload_collection_name_required){
-			if (getvalescaped("entercolname","")=="" && getval("collection_add","")==-1){ 
-				if (!is_array($save_errors)){$save_errors=array();}	
+			if (getvalescaped("entercolname","")=="" && getval("collection_add","")==-1){
+				if (!is_array($save_errors)){$save_errors=array();}
 				$save_errors['collectionname']=$lang["requiredfield"];
 			}
-		}		
+		}
 
 		if (($save_errors===true || $is_template)&&(getval("tweak","")==""))
-			{			
+			{
 			if ($ref>0 && getval("save","")!="")
 				{
 				# Log this
@@ -184,7 +184,7 @@ if ((getval("autosave","")!="") || (getval("tweak","")=="" && getval("submitted"
 					{
 					# Save button pressed? Move to next step.
 					if (getval("save","")!="") {redirect($baseurl_short."pages/upload.php?resource_type=".$resource_type . "&no_exif=" . $no_exif . "&autorotate=" . $autorotate . "&archive=" . $archive);}
-					}    
+					}
 				else // Hence fetching from ftp.
 					{
 					# Save button pressed? Move to next step.
@@ -193,7 +193,7 @@ if ((getval("autosave","")!="") || (getval("tweak","")=="" && getval("submitted"
 				}
 			}
 		elseif (getval("save","")!="")
-			{			
+			{
 			$show_error=true;
             }
 		}
@@ -205,7 +205,7 @@ if ((getval("autosave","")!="") || (getval("tweak","")=="" && getval("submitted"
 			redirect($baseurl_short."pages/search.php?refreshcollectionframe=true&search=!collection" . $collection);
 			}
 		}
-	
+
 	# If auto-saving, no need to continue as it will only add to bandwidth usage to send the whole edit page back to the client. Send a simple 'SAVED' message instead.
 	if (getval("autosave","")!="") {exit("SAVED");}
 	}
@@ -246,13 +246,13 @@ if (getval("tweak","")!="")
 	# Reload resource data.
 	$resource=get_resource_data($ref,false);
 	}
-	
+
 # Simulate reupload (preserving filename and thumbs, but otherwise resetting metadata).
 if (getval("exif","")!="")
 	{
 	upload_file($ref,$no_exif=false,true);
 	resource_log($ref,"r","");
-	}	
+	}
 
 # If requested, refresh the collection frame (for redirects from saves)
 if (getval("refreshcollectionframe","")!="")
@@ -268,7 +268,7 @@ include "../include/header.php";
 jQuery(document).ready(function()
     {
 
-    jQuery('.CollapsibleSectionHead').click(function() 
+    jQuery('.CollapsibleSectionHead').click(function()
         {
         cur=jQuery(this).next();
         cur_id=cur.attr("id");
@@ -286,12 +286,12 @@ jQuery(document).ready(function()
             }
 
         cur.slideToggle();
-       
-        
+
+
         return false;
-        }).each(function() 
+        }).each(function()
             {
-                cur_id=jQuery(this).next().attr("id"); 
+                cur_id=jQuery(this).next().attr("id");
                 if (getCookie(cur_id)=="collapsed")
                     {
                     jQuery(this).next().hide();
@@ -300,8 +300,8 @@ jQuery(document).ready(function()
                 else jQuery(this).addClass('expanded');
 
             });
-			
-            <?php 			
+
+            <?php
 		if($ctrls_to_save)
 			{?>
 			jQuery(document).bind('keydown',function (e)
@@ -318,7 +318,7 @@ jQuery(document).ready(function()
 					jQuery('.AutoSaveStatus').html('<?php echo $lang["saving"] ?>');
 					jQuery('.AutoSaveStatus').show();
 					jQuery.post(jQuery('#mainform').attr('action') + '&autosave=true',jQuery('#mainform').serialize(),
-				
+
 					function(data)
 						{
 						if (data.trim()=="SAVED")
@@ -328,19 +328,19 @@ jQuery(document).ready(function()
 							}
 						else
 							{
-								jQuery('.AutoSaveStatus').html('<?php echo $lang["save-error"] ?>' + data);				
+								jQuery('.AutoSaveStatus').html('<?php echo $lang["save-error"] ?>' + data);
 							}
 						});
-					}	
+					}
 					return false;
-					}						
+					}
 			   });
 		   <?php
-		   }?>  
-	   
+		   }?>
+
     });
  <?php hook("editadditionaljs") ?>
- 
+
 function ShowHelp(field)
 	{
 	// Show the help box if available.
@@ -362,13 +362,13 @@ function HideHelp(field)
 		jQuery('#collection_add').change(function (){
 			if(jQuery('#collection_add').val()==-1){
 				jQuery('#collectioninfo').fadeIn();
-			} 
+			}
 			else {
 				jQuery('#collectioninfo').fadeOut();
 			}
 		});
 		jQuery('#collection_add').change();
-	}); 
+	});
 
 <?php
 # Function to automatically save the form on field changes, if configured.
@@ -378,9 +378,9 @@ function AutoSave(field)
 	jQuery('#AutoSaveStatus' + field).html('<?php echo $lang["saving"] ?>');
 	jQuery('#AutoSaveStatus' + field).show();
 
-	
+
 	jQuery.post(jQuery('#mainform').attr('action') + '&autosave=true',jQuery('#mainform').serialize(),
-	
+
 	function(data)
 	  	{
 	  	if (data.trim()=="SAVED")
@@ -390,11 +390,11 @@ function AutoSave(field)
 		  	}
 		else
 			{
-		  		jQuery('#AutoSaveStatus' + field).html('<?php echo $lang["save-error"] ?>' + data);				
+		  		jQuery('#AutoSaveStatus' + field).html('<?php echo $lang["save-error"] ?>' + data);
 			}
 		});
 	}
-<?php } 
+<?php }
 
 # Resource next / back browsing.
 function EditNav() # Create a function so this can be repeated at the end of the form also.
@@ -418,7 +418,7 @@ function EditNav() # Create a function so this can be repeated at the end of the
 <div class="BasicsBox">
 <input name="save" type="submit" value="&nbsp;&nbsp;<?php echo $lang["next"]?>&nbsp;&nbsp;" class="defaultbutton" />
 <input type="hidden" name="submitted" value="true">
-<?php 
+<?php
 if ($multiple) { ?>
 <h1 id="editmultipleresources"><?php echo $lang["editmultipleresources"]?></h1>
 <p><?php $qty = count($items);
@@ -426,7 +426,7 @@ echo ($qty==1 ? $lang["resources_selected-1"] : str_replace("%number", $qty, $la
 # The script doesn't allow editing of empty collections, no need to handle that case here.
 echo text("multiple"); ?></p>
 
-<?php } elseif ($ref>0) { 
+<?php } elseif ($ref>0) {
 	if (!hook('replacebacklink')) {
 		?><p><a href="<?php echo $baseurl_short?>pages/view.php?ref=<?php echo urlencode($ref) ?>&search=<?php echo urlencode($search)?>&offset=<?php echo urlencode($offset) ?>&order_by=<?php echo urlencode($order_by) ?>&sort=<?php echo urlencode($sort) ?>&archive=<?php echo urlencode($archive) ?>" onClick="return CentralSpaceLoad(this,true);">&lt;&nbsp;<?php echo $lang["backtoresourceview"]?></a></p><?php
 	}
@@ -445,10 +445,10 @@ if (!$multiple&&!hook("dontshoweditnav")) { EditNav(); }
 <div class="clearerleft"> </div>
 </div>
 <?php } ?>
-<?php 
+<?php
 $custompermshowfile=false;
 hook("custompermshowfile");
-if ((!$is_template && !checkperm("F*"))||$custompermshowfile) 
+if ((!$is_template && !checkperm("F*"))||$custompermshowfile)
 { ?>
 <div class="Question" id="question_file">
 <label><?php echo $lang["file"]?></label>
@@ -472,7 +472,7 @@ if ($resource["file_extension"]!="") { ?><strong><?php echo str_replace_formatte
 	<?php if ($resource["has_image"]!=1) { ?>
 	<a href="<?php echo $baseurl_short?>pages/upload.php?ref=<?php echo urlencode($ref) ?>&search=<?php echo urlencode($search)?>&offset=<?php echo urlencode($offset) ?>&order_by=<?php echo urlencode($order_by) ?>&sort=<?php echo urlencode($sort) ?>&archive=<?php echo urlencode($archive) ?>&upload_a_file=true&resource_type=<?php echo $resource['resource_type']?>" onClick="return CentralSpaceLoad(this,true);">&gt;&nbsp;<?php echo $lang["uploadafile"]?></a>
 	<?php hook("afteruploadfile"); ?>
-	<?php } else { 
+	<?php } else {
 	if ($top_nav_upload_type=="local") $replace_upload_type="plupload"; else $replace_upload_type=$top_nav_upload_type;
 	?>
 	<a href="<?php echo $baseurl_short?>pages/upload_<?php echo $replace_upload_type ?>.php?ref=<?php echo urlencode($ref) ?>&search=<?php echo urlencode($search)?>&offset=<?php echo urlencode($offset) ?>&order_by=<?php echo urlencode($order_by) ?>&sort=<?php echo urlencode($sort) ?>&archive=<?php echo urlencode($archive) ?>&replace_resource=<?php echo urlencode($ref)  ?>&resource_type=<?php echo $resource['resource_type']?>" onClick="return CentralSpaceLoad(this,true);">&gt;&nbsp;<?php echo $lang["replacefile"]?></a>
@@ -483,7 +483,7 @@ if ($resource["file_extension"]!="") { ?><strong><?php echo str_replace_formatte
 	<?php if (!$disable_alternative_files && !checkperm('A')) { ?><br />
 	<a href="<?php echo $baseurl_short?>pages/alternative_files.php?ref=<?php echo urlencode($ref) ?>&search=<?php echo urlencode($search)?>&offset=<?php echo urlencode($offset) ?>&order_by=<?php echo urlencode($order_by) ?>&sort=<?php echo urlencode($sort) ?>&archive=<?php echo urlencode($archive) ?>"  onClick="return CentralSpaceLoad(this,true);">&gt;&nbsp;<?php echo $lang["managealternativefiles"]?></a><?php } ?>
 	<?php if ($allow_metadata_revert){?><br />
-	<a href="<?php echo $baseurl_short?>pages/edit.php?ref=<?php echo urlencode($ref) ?>&exif=true&search=<?php echo urlencode($search)?>&offset=<?php echo urlencode($offset) ?>&order_by=<?php echo urlencode($order_by) ?>&sort=<?php echo urlencode($sort) ?>&archive=<?php echo urlencode($archive) ?>" onClick="return confirm('<?php echo $lang["confirm-revertmetadata"]?>');">&gt; 
+	<a href="<?php echo $baseurl_short?>pages/edit.php?ref=<?php echo urlencode($ref) ?>&exif=true&search=<?php echo urlencode($search)?>&offset=<?php echo urlencode($offset) ?>&order_by=<?php echo urlencode($order_by) ?>&sort=<?php echo urlencode($sort) ?>&archive=<?php echo urlencode($archive) ?>" onClick="return confirm('<?php echo $lang["confirm-revertmetadata"]?>');">&gt;
 	<?php echo $lang["action-revertmetadata"]?></a><?php } ?>
 	<?php hook("afterfileoptions"); ?>
 </div>
@@ -572,7 +572,7 @@ $titleh2 = str_replace(array("%number","%subtitle"), array("1", $lang["specifyde
 <?php if (!$multiple){?>
 <div class="Question" id="question_resourcetype">
 <label for="resourcetype"><?php echo $lang["resourcetype"]?></label>
-<select name="resource_type" id="resourcetype" class="stdwidth" 
+<select name="resource_type" id="resourcetype" class="stdwidth"
 onChange="<?php if ($ref>0) { ?>if (confirm('<?php echo $lang["editresourcetypewarning"]; ?>')){<?php } ?>CentralSpacePost(document.getElementById('mainform'),true);<?php if ($ref>0) { ?>}else {return}<?php } ?>">
 <?php
 $types=get_resource_types();
@@ -603,13 +603,13 @@ for ($n=0;$n<count($types);$n++)
 </div>
 <?php } ?>
 <?php } # end hook("replaceedittype")
-?> 
+?>
 <?php
 $lastrt=-1;
 
 # "copy data from" feature
 if ($enable_copy_data_from && !$multiple && !checkperm("F*"))
-	{ 
+	{
 	?>
 	<div class="Question" id="question_copyfrom">
 	<label for="copyfrom"><?php echo $lang["batchcopyfrom"]?></label>
@@ -633,12 +633,12 @@ if (isset($metadata_template_resource_type) && !$multiple && !checkperm("F*"))
 		{
 		?>
 		<option value="<?php echo $template["ref"] ?>"><?php echo htmlspecialchars($template["field$metadata_template_title_field"]) ?></option>
-		<?php	
+		<?php
 		}
 	?>
 	</select>
 	<input type="submit" class="medcomplementwidth" name="copyfromsubmit" value="<?php echo $lang["action-select"]?>">
-	</div><!-- end of question_metadatatemplate --> 
+	</div><!-- end of question_metadatatemplate -->
 	<?php
 	}
 
@@ -656,7 +656,7 @@ if (getval("copyfrom","")!="")
 	# Copy from function
 	$copyfrom=getvalescaped("copyfrom","");
 	$copyfrom_access=get_resource_access($copyfrom);
-	
+
 	# Check access level
 	if ($copyfrom_access!=2) # Do not allow confidential resources (or at least, confidential to that user) to be copied from
 		{
@@ -925,7 +925,7 @@ function display_multilingual_text_field($n, $field, $translations)
 function display_field($n, $field, $newtab=false)
 	{
 	global $use, $ref, $original_fields, $multilingual_text_fields, $multiple, $lastrt,$is_template, $language, $lang, $blank_edit_template, $edit_autosave, $errors, $tabs_on_edit,$collapsible_sections, $ctrls_to_save;
-	
+
 	$name="field_" . $field["ref"];
 	$value=$field["value"];
 	$value=trim($value);
@@ -1010,7 +1010,7 @@ function display_field($n, $field, $newtab=false)
 		<?php echo $lang["find"]?> <input type="text" name="find_<?php echo $field["ref"]?>" class="shrtwidth">
 		<?php echo $lang["andreplacewith"]?> <input type="text" name="replace_<?php echo $field["ref"]?>" class="shrtwidth">
 		</div><!-- End of findreplace_<?php echo $n?> -->
-		
+
 		<?php hook ("edit_all_after_findreplace","",array($field,$n)); ?>
 		<?php
 		}
@@ -1018,7 +1018,7 @@ function display_field($n, $field, $newtab=false)
 
 	<div class="Question" id="question_<?php echo $n?>" <?php
 	if ($multiple || !$displaycondition || $newtab)
-		{?>style="border-top:none;<?php 
+		{?>style="border-top:none;<?php
 		if ($multiple || !$displaycondition) # Hide this
 			{?>
 			display:none;
@@ -1120,16 +1120,16 @@ if($tabs_on_edit)
 	$tabname="";
 	$tabcount=0;
 	if (count($fields)>0 && $fields[0]["tab_name"]!="")
-		{ 
+		{
 		?>
-		
+
 		<?php
 		$extra="";
 		$tabname="";
 		$tabcount=0;
 		$tabtophtml="";
 		for ($n=0;$n<count($fields);$n++)
-			{	
+			{
 			$value=$fields[$n]["value"];
 
 			# draw new tab?
@@ -1143,13 +1143,13 @@ if($tabs_on_edit)
 				$tabname=$fields[$n]["tab_name"];
 				}
 			}
-			
+
 		if ($tabcount>1)
 			{
 			echo $tabtophtml;
 			echo "</div><!-- end of TabBar -->";
 			}
-		
+
 		if ($tabcount>1)
 			{?>
 			<script type="text/javascript">
@@ -1168,35 +1168,35 @@ if($tabs_on_edit)
 			}
 		}
 
-	
+
 	if ($tabcount>1)
 		{
 		?>
 		<div id="tab0" class="TabbedPanel<?php if ($tabcount>0) { ?> StyledTabbedPanel<?php } ?>">
 		<div class="clearerleft"> </div>
 		<div class="TabPanelInner">
-			
+
 		<?php
 		}
 	}
 
 
 $tabname="";
-$tabcount=0;	
+$tabcount=0;
 
 for ($n=0;$n<count($fields);$n++)
 	{
 	# Should this field be displayed?
 	if (is_field_displayed($fields[$n]))
 		{
-		$newtab=false;	
+		$newtab=false;
 		if($n==0 && $tabs_on_edit){$newtab=true;}
 		# draw new tab panel?
 		if ($tabs_on_edit && ($tabname!=$fields[$n]["tab_name"]) && ($fieldcount>0))
 			{
 			$tabcount++;
 			# Also display the custom formatted data $extra at the bottom of this tab panel.
-			?><div class="clearerleft"> </div><?php echo $extra?></div><!-- end of TabPanelInner --></div><!-- end of TabbedPanel --><div class="TabbedPanel StyledTabbedPanel" style="display:none;" id="tab<?php echo $tabcount?>"><div class="TabPanelInner"><?php	
+			?><div class="clearerleft"> </div><?php echo $extra?></div><!-- end of TabPanelInner --></div><!-- end of TabbedPanel --><div class="TabbedPanel StyledTabbedPanel" style="display:none;" id="tab<?php echo $tabcount?>"><div class="TabPanelInner"><?php
 			$extra="";
 			$newtab=true;
 			}
@@ -1206,7 +1206,7 @@ for ($n=0;$n<count($fields);$n++)
 		}
 	}
 
-	
+
 
 if ($tabs_on_edit && $tabcount>0)
 	{
@@ -1217,10 +1217,10 @@ if ($tabs_on_edit && $tabcount>0)
 	</div><!-- end of Tabs BasicsBox -->
 	<?php
 	}
-	
-	
+
+
 # Add required_fields_exempt so it is submitted with POST
-echo " <input type=hidden name=\"exemptfields\" id=\"exemptfields\" value=\"" . implode(",",$required_fields_exempt) . "\">";	
+echo " <input type=hidden name=\"exemptfields\" id=\"exemptfields\" value=\"" . implode(",",$required_fields_exempt) . "\">";
 
 # Work out the correct archive status.
 if ($ref<0) # Upload template.
@@ -1239,7 +1239,7 @@ if ($ref<0) # Upload template.
         if ($modified_defaultstatus) {$status = $modified_defaultstatus;}  # Set the modified default status - if set.
         elseif ($resource["archive"]!=2 && checkperm("e" . $resource["archive"])) {$status = $resource["archive"];} # Set status to the status stored in the user template - if the status is not Archived and if the user has the required permission.
         elseif (checkperm("c")) {$status = 0;} # Else, set status to Active - if the user has the required permission.
-        elseif (checkperm("d")) {$status = -2;} # Else, set status to Pending Submission.   
+        elseif (checkperm("d")) {$status = -2;} # Else, set status to Pending Submission.
         }
 
     if ($show_status_and_access_on_upload==false)
@@ -1270,7 +1270,7 @@ if (!checkperm("F*")&&!hook("editstatushide")) # Only display Status / Access / 
 	        	?></div><!-- end of ResourceMetadataSection --><h1 <?php ($collapsible_sections)?"class=\"CollapsibleSectionHead\"":""?>><?php echo $lang["status"]?></h1><div <?php ($collapsible_sections)?"class=\"CollapsibleSection\"":""?> id="StatusSection<?php if ($ref==-1) echo "Upload"; ?>"><?php # Not showing relationships
 		    	}
 		    }
-		    
+
         } /* end hook replacestatusandrelationshipsheader */
 
     hook("statreladdtopfields");
@@ -1286,7 +1286,7 @@ if (!checkperm("F*")&&!hook("editstatushide")) # Only display Status / Access / 
                 } ?>
             <div class="Question" id="question_status" <?php if ($multiple) {?>style="display:none;"<?php } ?>>
             <label for="archive"><?php echo $lang["status"]?></label><?php
-            
+
             # Autosave display
             if ($edit_autosave || $ctrls_to_save)
                 { ?>
@@ -1313,7 +1313,7 @@ if (!checkperm("F*")&&!hook("editstatushide")) # Only display Status / Access / 
     if (!hook("replaceaccessselector"))
         {
         if ($ref<0 && $show_status_and_access_on_upload==false)
-            { 
+            {
             # Upload template and the status and access fields are configured to be hidden on uploads.
             ?>
             <input type=hidden name="access" value="<?php echo htmlspecialchars($resource["access"])?>"><?php
@@ -1327,7 +1327,7 @@ if (!checkperm("F*")&&!hook("editstatushide")) # Only display Status / Access / 
 
             # Autosave display
             if ($edit_autosave || $ctrls_to_save) { ?><div class="AutoSaveStatus" id="AutoSaveStatusAccess" style="display:none;"></div><?php } ?>
-	
+
             <select class="stdwidth" name="access" id="access" onChange="var c=document.getElementById('custom_access');if (this.value==3) {c.style.display='block';} else {c.style.display='none';}<?php if ($edit_autosave) {?>AutoSave('Access');<?php } ?>"><?php
 
             for ($n=0;$n<=($custom_access?3:2);$n++)
@@ -1335,7 +1335,7 @@ if (!checkperm("F*")&&!hook("editstatushide")) # Only display Status / Access / 
                 if ($n==2 && checkperm("v"))
                     { ?>
                     <option value="<?php echo $n?>" <?php if ($resource["access"]==$n) { ?>selected<?php } ?>><?php echo $lang["access" . $n]?></option><?php
-                    } 
+                    }
                 else if ($n!=2)
                     { ?>
                     <option value="<?php echo $n?>" <?php if ($resource["access"]==$n) { ?>selected<?php } ?>><?php echo $lang["access" . $n]?></option><?php
@@ -1354,7 +1354,7 @@ if (!checkperm("F*")&&!hook("editstatushide")) # Only display Status / Access / 
                 $perms=explode(",",$groups[$n]["permissions"]);
 
                 if (in_array("v",$perms)) {$access=0;$editable=false;} ?>
-                    
+
                 <tr>
                 <td valign=middle nowrap><?php echo htmlspecialchars($groups[$n]["name"])?>&nbsp;&nbsp;</td>
 
@@ -1401,7 +1401,7 @@ if (!checkperm("F*")&&!hook("editstatushide")) # Only display Status / Access / 
 
         <div class="clearerleft"> </div>
         </div><?php
-        } 
+        }
     }
 
 if (false && !$disable_geocoding)
@@ -1440,20 +1440,20 @@ if (false && !$disable_geocoding)
 	</select>
 	</div>
 	<div class="clearerleft"> </div>
-	
-	
+
+
 	<?php
 	hook("locationextras");
-	} 
+	}
 	?>
-	
+
 	<?php
-	
-	
+
+
 	if (!$edit_upload_options_at_top){include '../include/edit_upload_options.php';}
 	?>
-		
-	
+
+
 	</div>
 
 	<?php if (!hook('replacesubmitbuttons')) { ?>
@@ -1463,8 +1463,8 @@ if (false && !$disable_geocoding)
 	<div class="clearerleft"> </div>
 	</div>
 	<?php } ?>
-	
-<?php 
+
+<?php
 # Duplicate navigation
 if (!$multiple && $ref>0 &&!hook("dontshoweditnav")) {EditNav();}
 
@@ -1482,7 +1482,7 @@ if($collapsible_sections)
 
 <?php if (isset($show_error) && isset($save_errors) && !hook('replacesaveerror')) {
 	foreach ($save_errors as $save_error_field=>$save_error_message)
-		{	
+		{
 		?>
 	    <script type="text/javascript">
 	    alert('<?php echo htmlspecialchars($save_error_message) ?>');
