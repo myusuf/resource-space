@@ -1,4 +1,6 @@
 <?php
+require_once 'curl_client.php';
+
 /**
  * Is the session already started?
  * @return boolean
@@ -122,11 +124,62 @@ function mediaapi_collect_derivative_data(array $data = null)
  * @param string $derivative_ref  Derivative id/Alternative id
  * @param int    $ordinal         Ordinal for the derivative
  */
-function mediaapi_insert_derivative_data($resource_ref, $derivative_ref, $ordinal = 1)
+function mediaapi_insert_derivative_data($resource_ref, $derivative_ref, $ordinal = 1, array $data = null)
 {
-    $data = mediaapi_generate_derivative_metadata($resource_ref, $derivative_ref);
-    $data['ordinal']    = $ordinal;
-    $data['is_primary'] = ($ordinal === 1) ? 'y' : 'n';
+    if (null === $data) {
+        $data = mediaapi_generate_derivative_metadata($resource_ref, $derivative_ref);
+        $data['ordinal']    = $ordinal;
+        $data['is_primary'] = ($ordinal === 1) ? 'y' : 'n';
+    }
 
     mediaapi_upsert_derivative_resources($derivative_ref, $data);
+}
+
+function mediaapi_get_accesstoken()
+{
+    global $mediaapi_oauth_url, $oauth2_username, $oauth2_password, $oauth2_client_secret, $oauth2_client_id, $oauth2_scope;
+
+    $now = date('Y-m-d H:i:s');
+
+    // check first if there is an existing access_token or refresh_token that has not expired
+    $token = sql_value('SELECT mediaapi_token as value FROM mediaapi_oauth_tokens WHERE mediaapi_type="access" AND mediaapi_expiration > "' . $now . '"', null);
+
+    if (null !== $token) {
+        return $token;
+    }
+
+    // if no access token, check for refresh token first
+    $refresh_token = sql_value('SELECT mediaapi_token as value FROM mediaapi_oauth_tokens WHERE mediaapi_type="refresh" AND mediaapi_expiration > "' . $now . '"', null);
+    if (null !== $refresh_token) {
+        $curl = new CurlClient($mediaapi_oauth_url . '/request');
+        $curl->setRequestType('POST');
+        $curl->setBody(json_encode(array(
+            "grant_type"    => "refresh_token",
+            "refresh_token" => $refresh_token,
+            "client_id"     => $oauth2_client_id,
+            "client_secret" => $oauth2_client_secret,
+        )));
+
+        $response = json_decode($curl->send());
+        if (!empty($response['access_token'])) {
+            return $response['access_token'];
+        }
+    }
+
+    // still no access token, make a regular request
+    $curl = new CurlClient($mediaapi_oauth_url . '/request');
+    $curl->setRequestType('POST');
+    $curl->setBody(json_encode(array(
+        "grant_type"    => "password",
+        "username"      => $oauth2_username,
+        "password"      => $oauth2_password,
+        "client_id"     => $oauth2_client_id,
+        "client_secret" => $oauth2_client_secret,
+        "scope"         => $oauth2_scope,
+    )));
+var_dump($curl->send());die;
+    $response = json_decode($curl->send());
+    if (!empty($response['access_token'])) {
+        return $response['access_token'];
+    }
 }
