@@ -126,10 +126,14 @@ function mediaapi_collect_derivative_data(array $data = null)
  */
 function mediaapi_insert_derivative_data($resource_ref, $derivative_ref, $ordinal = 1, array $data = null)
 {
-    if (null === $data) {
-        $data = mediaapi_generate_derivative_metadata($resource_ref, $derivative_ref);
-        $data['ordinal']    = $ordinal;
-        $data['is_primary'] = ($ordinal === 1) ? 'y' : 'n';
+    $dbdata = mediaapi_generate_derivative_metadata($resource_ref, $derivative_ref);
+    $dbdata['ordinal']    = $ordinal;
+    $dbdata['is_primary'] = ($ordinal === 1) ? 'y' : 'n';
+
+    if (null !== $data) {
+        $data = array_merge($dbdata, $data);
+    } else {
+        $data = $dbdata;
     }
 
     mediaapi_upsert_derivative_resources($derivative_ref, $data);
