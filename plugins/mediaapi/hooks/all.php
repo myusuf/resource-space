@@ -69,3 +69,36 @@ function HookMediaapiAllPost_savealternativefile($alt_ref, $parent_resource)
         mediaapi_upsert_derivative_resources($alt_ref, mediaapi_collect_derivative_data());
     }
 }
+
+function HookMediaapiAllAdditionalvalcheck($fields, $field)
+{
+    global $media_resource;
+
+    $mediaapi_fields = array(
+        'uuid'      => 'uuid',
+        'shortName' => 'shortname',
+        'longName'  => 'longname',
+        'shortDescription' => 'shortdescription',
+        'longDescription'  => 'longdescription',
+        'siteId'    => 'siteid',
+        'detailUrl' => 'detailurl',
+        'externalId' => 'externalid',
+        'mediaType'  => 'mediatype',
+        'thumbnailUrl'  => 'thumbnailurl',
+        'backgroundUrl' => 'backgroundurl',
+        'ccUrl'    => 'ccurl',
+        'duration' => 'duration',
+        'language' => 'language',
+        'aspectRatio' => 'aspectratio',
+        'canEmbed' => 'canembed',
+        'canDownload' => 'candownload',
+        'isPublished' => 'ispublished',
+        'contributorId' => 'contributorid',
+    );
+
+    if (($media_resource_key = array_search($field['name'], $mediaapi_fields)) !== false) {
+        $media_resource[$media_resource_key] = $field['value'];
+    }
+
+    return false;
+}

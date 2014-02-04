@@ -87,9 +87,9 @@ function mediaapi_generate_derivative_metadata($ref, $derivative_ref = -1)
     $return['file_path']       = trim(str_replace($filename, '', $filename_rootpath), '/ ');
     $return['file_name']       = str_replace(".{$extension}", '', $filename);
     $return['file_extension']  = $extension;
-    $return['use_extension']   = ($extension === 'mp4') ? 'y' : 'n';
-    $return['is_downloadable'] = 'y';
-    $return['is_streamable']   = in_array($extension, array('mp4', 'mp3')) ? 'y' : 'n';
+    $return['use_extension']   = ($extension === 'mp4') ? 'Y' : 'N';
+    $return['is_downloadable'] = 'Y';
+    $return['is_streamable']   = in_array($extension, array('mp4', 'mp3')) ? 'Y' : 'N';
 
     return $return;
 }
@@ -127,8 +127,9 @@ function mediaapi_collect_derivative_data(array $data = null)
 function mediaapi_insert_derivative_data($resource_ref, $derivative_ref, $ordinal = 1, array $data = null)
 {
     $dbdata = mediaapi_generate_derivative_metadata($resource_ref, $derivative_ref);
+    $dbdata['media_server_id'] = 1; // verify this later
     $dbdata['ordinal']    = $ordinal;
-    $dbdata['is_primary'] = ($ordinal === 1) ? 'y' : 'n';
+    $dbdata['is_primary'] = ($ordinal === 1) ? 'Y' : 'N';
 
     if (null !== $data) {
         $data = array_merge($dbdata, $data);
@@ -205,4 +206,47 @@ function mediaapi_get_accesstoken()
         ');
         return $response['access_token'];
     }
+}
+
+function mediaapi_create_resource(array $body, $access_token)
+{
+    global $mediaapi_api_url, $oauth2_username, $oauth2_password, $oauth2_client_secret, $oauth2_client_id, $oauth2_scope;
+
+    $curl = new CurlClient($mediaapi_api_url . '/media');
+    $curl->setBody(json_encode($body));
+    $curl->setRequestType('POST');
+    $curl->setOauthAccessToken($access_token);
+
+    return json_decode($curl->send());
+}
+
+function mediaapi_update_resource($uuid, array $body, $access_token)
+{
+    global $mediaapi_api_url, $oauth2_username, $oauth2_password, $oauth2_client_secret, $oauth2_client_id, $oauth2_scope;
+
+    $url = $mediaapi_api_url . '/media/' . $uuid;
+    $curl = new CurlClient($url);
+    $curl->setBody(json_encode($body));
+    $curl->setRequestType('PUT');
+    $curl->setOauthAccessToken($access_token);
+    $curl->setContentType('multipart/form-data');
+
+    return json_decode($curl->send());
+}
+
+/**
+ * Converts string from underscore separate to camelcase
+ * @param string $string
+ * @return boolean
+ */
+function mediaapi_filter_underscoretocamelcase($string)
+{
+	$string = explode('_', $string);
+    array_walk($string, function (&$item, $key) {
+        if ($key > 0) {
+			$item = ucfirst($item);
+        }
+        return $item;
+    });
+	return implode('', $string);
 }

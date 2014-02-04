@@ -165,14 +165,14 @@ include "../include/header.php";
 <div class="Question">
 <label for="name">Use extension</label>
     <?php $use_extension = !empty($mediaapi_derivatives['use_extension']) ? $mediaapi_derivatives['use_extension'] : ''; ?>
-    <?php echo $use_extension == 'y' ? 'yes' : 'no'; ?>
+    <?php echo $use_extension == 'Y' ? 'yes' : 'no'; ?>
 <div class="clearerleft"> </div>
 </div>
 
 <div class="Question">
 <label for="name">Is downloadable</label>
     <?php $is_downloadable = !empty($mediaapi_derivatives['is_downloadable']) ? $mediaapi_derivatives['is_downloadable'] : ''; ?>
-    <?php echo $is_downloadable == 'y' ? 'yes' : 'no'; ?>
+    <?php echo $is_downloadable == 'Y' ? 'yes' : 'no'; ?>
 <div class="clearerleft"> </div>
 </div>
 
@@ -181,8 +181,8 @@ include "../include/header.php";
     <?php $is_streamable = !empty($mediaapi_derivatives['is_streamable']) ? $mediaapi_derivatives['is_streamable'] : ''; ?>
     <select class="stdwidth" name="is_streamable" id="is_streamable">
        <option <?php echo ($is_streamable == '')   ? 'selected="selected"' : ''; ?> value=""></option>
-       <option <?php echo ($is_streamable == 'n')  ? 'selected="selected"' : ''; ?> value="n">No</option>
-	   <option <?php echo ($is_streamable == 'y')  ? 'selected="selected"' : ''; ?> value="y">Yes</option>
+       <option <?php echo ($is_streamable == 'N')  ? 'selected="selected"' : ''; ?> value="N">No</option>
+	   <option <?php echo ($is_streamable == 'Y')  ? 'selected="selected"' : ''; ?> value="Y">Yes</option>
 	</select>
 <div class="clearerleft"> </div>
 </div>
@@ -190,7 +190,7 @@ include "../include/header.php";
 <div class="Question">
 <label for="name">Is primary</label>
     <?php $is_primary = !empty($mediaapi_derivatives['is_primary']) ? $mediaapi_derivatives['is_primary'] : ''; ?>
-    <?php echo $is_primary == 'y' ? 'yes' : 'no'; ?>
+    <?php echo $is_primary == 'Y' ? 'yes' : 'no'; ?>
 <div class="clearerleft"> </div>
 </div>
 <?php endif; ?>

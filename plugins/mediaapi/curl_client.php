@@ -6,6 +6,7 @@ class CurlClient
     protected $body;
     protected $url;
     protected $requestType = 'GET';
+    protected $contentType = 'application/json';
     protected $oauthAccessToken;
 
     public function __construct($url = '')
@@ -33,7 +34,7 @@ class CurlClient
         curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, $this->requestType);
 
         $headers = array();
-        $headers[] = 'Content-Type: application/json';
+        $headers[] = 'Content-Type: ' . $this->contentType;
 
         if (!empty($this->oauthAccessToken)) {
             $headers[] = 'Authorization: Bearer ' . $this->oauthAccessToken;
@@ -57,6 +58,12 @@ class CurlClient
     public function setRequestType($request)
     {
         $this->requestType = $request;
+        return $this;
+    }
+
+    public function setContentType($contentType)
+    {
+        $this->contentType = $contentType;
         return $this;
     }
 
