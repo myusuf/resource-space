@@ -5,6 +5,7 @@ class CurlClient
     protected $curl;
     protected $body;
     protected $url;
+    protected $requestType = 'GET';
     protected $oauthAccessToken;
 
     public function __construct($url = '')
@@ -29,6 +30,7 @@ class CurlClient
         // set URL and other appropriate options
         curl_setopt($this->curl, CURLOPT_URL, $this->url);
         curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, $this->requestType);
 
         $headers = array();
         $headers[] = 'Content-Type: application/json';
@@ -52,9 +54,9 @@ class CurlClient
         return $this;
     }
 
-    public function setRequestType($request = 'GET')
+    public function setRequestType($request)
     {
-        curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, $request);
+        $this->requestType = $request;
         return $this;
     }
 

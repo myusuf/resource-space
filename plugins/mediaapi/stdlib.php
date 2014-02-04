@@ -126,30 +126,40 @@ function mediaapi_collect_derivative_data(array $data = null)
  */
 function mediaapi_insert_derivative_data($resource_ref, $derivative_ref, $ordinal = 1, array $data = null)
 {
-    if (null === $data) {
-        $data = mediaapi_generate_derivative_metadata($resource_ref, $derivative_ref);
-        $data['ordinal']    = $ordinal;
-        $data['is_primary'] = ($ordinal === 1) ? 'y' : 'n';
+    $dbdata = mediaapi_generate_derivative_metadata($resource_ref, $derivative_ref);
+    $dbdata['ordinal']    = $ordinal;
+    $dbdata['is_primary'] = ($ordinal === 1) ? 'y' : 'n';
+
+    if (null !== $data) {
+        $data = array_merge($dbdata, $data);
+    } else {
+        $data = $dbdata;
     }
 
     mediaapi_upsert_derivative_resources($derivative_ref, $data);
 }
 
+/**
+ * Retrieves the access token
+ * If no access token exists in db or if access token expire, will pull from oauth server
+ *
+ * @return string|null Access token
+ */
 function mediaapi_get_accesstoken()
 {
     global $mediaapi_oauth_url, $oauth2_username, $oauth2_password, $oauth2_client_secret, $oauth2_client_id, $oauth2_scope;
 
-    $now = date('Y-m-d H:i:s');
+    $now      = gmdate('Y-m-d H:i:s');
+    $unixtime = (int) gmdate('U');
 
     // check first if there is an existing access_token or refresh_token that has not expired
-    $token = sql_value('SELECT mediaapi_token as value FROM mediaapi_oauth_tokens WHERE mediaapi_type="access" AND mediaapi_expiration > "' . $now . '"', null);
-
+    $token = sql_value('SELECT mediaapi_token as value FROM mediaapi_oauth_tokens WHERE mediaapi_type="access" AND mediaapi_expiration > "' . $now . '" ORDER BY mediaapi_expiration DESC LIMIT 1', null);
     if (null !== $token) {
         return $token;
     }
 
-    // if no access token, check for refresh token first
-    $refresh_token = sql_value('SELECT mediaapi_token as value FROM mediaapi_oauth_tokens WHERE mediaapi_type="refresh" AND mediaapi_expiration > "' . $now . '"', null);
+    // if no access token, check for refresh token and use it to request a new access token
+    $refresh_token = sql_value('SELECT mediaapi_token as value FROM mediaapi_oauth_tokens WHERE mediaapi_type="refresh" AND mediaapi_expiration > "' . $now . '" ORDER BY mediaapi_expiration DESC LIMIT 1', null);
     if (null !== $refresh_token) {
         $curl = new CurlClient($mediaapi_oauth_url . '/request');
         $curl->setRequestType('POST');
@@ -160,8 +170,14 @@ function mediaapi_get_accesstoken()
             "client_secret" => $oauth2_client_secret,
         )));
 
-        $response = json_decode($curl->send());
+        $response = (array) json_decode($curl->send());
         if (!empty($response['access_token'])) {
+            sql_query('
+                INSERT IGNORE INTO mediaapi_oauth_tokens
+                    (mediaapi_token, mediaapi_type, mediaapi_scope, mediaapi_expiration)
+                VALUES
+                    ("' . $response['access_token'] . '", "access", "' . $response['scope'] . '", "' . gmdate('Y-m-d H:i:s', ($unixtime + $response['access_expires_in'])) . '")
+            ');
             return $response['access_token'];
         }
     }
@@ -177,9 +193,16 @@ function mediaapi_get_accesstoken()
         "client_secret" => $oauth2_client_secret,
         "scope"         => $oauth2_scope,
     )));
-var_dump($curl->send());die;
-    $response = json_decode($curl->send());
+
+    $response = (array) json_decode($curl->send());
     if (!empty($response['access_token'])) {
+        sql_query('
+            INSERT IGNORE INTO mediaapi_oauth_tokens
+                (mediaapi_token, mediaapi_type, mediaapi_scope, mediaapi_expiration)
+            VALUES
+                ("' . $response['access_token'] . '", "access", "' . $response['scope'] . '", "' . gmdate('Y-m-d H:i:s', ($unixtime + $response['access_expires_in'])) . '"),
+                ("' . $response['refresh_token'] . '", "refresh", "' . $response['scope'] . '", "' . gmdate('Y-m-d H:i:s', ($unixtime + $response['refresh_expires_in'])) . '")
+        ');
         return $response['access_token'];
     }
 }
