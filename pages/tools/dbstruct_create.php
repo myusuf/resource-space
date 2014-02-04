@@ -9,8 +9,10 @@ $createData=false;
 # Use the below to set which tables we will extract data for - empty array means all tables.
 #$dataFor=array("usergroup","resource_type_field","site_text","user","collection","user_collection","report","preview_size","resource_type");
 $dataFor=array();
-$tableFor=array('mediaapi_oauth_tokens');
-$indicesFor=array('mediaapi_oauth_tokens');
+//$tableFor=array('mediaapi_oauth_tokens');
+//$indicesFor=array('mediaapi_oauth_tokens');
+$tableFor=array('mediaapi_derivatives');
+$indicesFor=array('mediaapi_derivatives');
 
 if (getval("execute","")!="")
 	{
