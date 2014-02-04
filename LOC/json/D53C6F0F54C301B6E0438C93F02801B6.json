@@ -1,0 +1,38 @@
+{
+    "uuid": "D53C6F0F54C301B6E0438C93F02801B6",
+    "siteId": "21",
+    "shortName": "Oh! Susanna",
+    "longName": null,
+    "shortDescription": null,
+    "longDescription": null,
+    "detailUrl": "N/A",
+    "externalId": "200198044",
+    "mediaType": "V",
+    "thumbnailUrl": null,
+    "backgroundUrl": null,
+    "ccUrl": null,
+    "duration": "0",
+    "language": null,
+    "aspectRatio": null,
+    "canEmbed": "Y",
+    "canDownload": "N",
+    "isPublished": "Y",
+    "contributorId": "1",
+    "derivatives": [
+        {
+            "derivativeId": "44394",
+            "mediaServerId": "1",
+            "shortName": "Oh! Susanna",
+            "ordinal": "1",
+            "prefix": "mp4",
+            "filePath": "ingested/interviews",
+            "fileName": "120130mus1000_2",
+            "fileExtension": "mp4",
+            "useExtension": "Y",
+            "isDownloadable": "N",
+            "isStreamable": "Y",
+            "isPrimary": "Y",
+            "derivativeUrl": "rtmp://stream.media.loc.gov/vod/mp4:ingested/interviews/120130mus1000_2.mp4"
+        }
+    ]
+}
