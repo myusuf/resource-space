@@ -142,7 +142,8 @@ function mediaapi_insert_derivative_data($resource_ref, $derivative_ref, $ordina
 
 /**
  * Retrieves the access token
- * If no access token exists in db or if access token expire, will pull from oauth server
+ * If no access token exists in db or if access token expired,
+ * will make a request to the oauth server.
  *
  * @return string|null Access token
  */
@@ -208,11 +209,20 @@ function mediaapi_get_accesstoken()
     }
 }
 
-function mediaapi_create_resource(array $body, $access_token)
+/**
+ * Makes a "post" request which creates a new resource
+ * in mediaapi
+ *
+ * @param array $body
+ * @param string $access_token
+ * @return mixed
+ */
+function mediaapi_create_media(array $body, $access_token, $is_derivative = false)
 {
-    global $mediaapi_api_url, $oauth2_username, $oauth2_password, $oauth2_client_secret, $oauth2_client_id, $oauth2_scope;
+    global $mediaapi_api_url;
 
-    $curl = new CurlClient($mediaapi_api_url . '/media');
+    $url  = $mediaapi_api_url . (($is_derivative == true) ?  '/derivative' : '/media');
+    $curl = new CurlClient($url);
     $curl->setBody(json_encode($body));
     $curl->setRequestType('POST');
     $curl->setOauthAccessToken($access_token);
@@ -220,11 +230,19 @@ function mediaapi_create_resource(array $body, $access_token)
     return json_decode($curl->send());
 }
 
-function mediaapi_update_resource($uuid, array $body, $access_token)
+/**
+ * Updates a resource with "put" request in mediaapi
+ *
+ * @param string $uuid
+ * @param array $body
+ * @param string $access_token
+ * @return mixed
+ */
+function mediaapi_update_media($uuid, array $body, $access_token, $is_derivative = false)
 {
-    global $mediaapi_api_url, $oauth2_username, $oauth2_password, $oauth2_client_secret, $oauth2_client_id, $oauth2_scope;
+    global $mediaapi_api_url;
 
-    $url = $mediaapi_api_url . '/media/' . $uuid;
+    $url  = $mediaapi_api_url . (($is_derivative == true) ?  '/derivative/' : '/media/') . $uuid;
     $curl = new CurlClient($url);
     $curl->setBody(json_encode($body));
     $curl->setRequestType('PUT');
@@ -236,6 +254,7 @@ function mediaapi_update_resource($uuid, array $body, $access_token)
 
 /**
  * Converts string from underscore separate to camelcase
+ *
  * @param string $string
  * @return boolean
  */
@@ -249,4 +268,18 @@ function mediaapi_filter_underscoretocamelcase($string)
         return $item;
     });
 	return implode('', $string);
+}
+
+/**
+ * Retrieve the max ordinal of a specific alternative resource
+ * @param string $resource_ref
+ * @return int|null
+ */
+function mediaapi_get_max_ordinal($resource_ref)
+{
+    $result = sql_value("SELECT MAX(md.ordinal)+1 AS value FROM resource_alt_files raf, mediaapi_derivatives md WHERE raf.ref=md.alt_file_id AND resource='{$resource_ref}'", 1);
+    if (empty($result) || $resource_ref < 1) {
+        return 1;
+    }
+    return $result;
 }

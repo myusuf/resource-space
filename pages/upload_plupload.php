@@ -234,6 +234,8 @@ if ($_FILES)
 					}
 
 				echo "SUCCESS " . htmlspecialchars($alternative) . ", " . htmlspecialchars($aref);
+
+				hook('postalternativefileupload', "", array($alternative, $aref));
 				exit();
 				}
 			if ($replace=="" && $replace_resource=="")

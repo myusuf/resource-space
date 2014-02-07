@@ -48,3 +48,10 @@ function HookMediaapiUpload_pluploadAfternewresource($ref)
     	}
     }
 }
+
+function HookMediaapiUpload_pluploadPostalternativefileupload($resource_ref, $alternative_ref)
+{
+    // figure the ordinal
+    $ordinal = mediaapi_get_max_ordinal($resource_ref);
+    mediaapi_insert_derivative_data($resource_ref, $alternative_ref, $ordinal);
+}

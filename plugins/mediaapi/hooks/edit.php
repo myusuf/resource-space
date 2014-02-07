@@ -113,7 +113,6 @@ function HookMediaapiEditAftersaveresourcedata()
             }
         }
 
-
         // get the derivatives
         $derivatives = array();
         foreach (get_alternative_files($resource_ref) as $derivative) {
@@ -126,6 +125,7 @@ function HookMediaapiEditAftersaveresourcedata()
         // loop through each valid derivative keys and apply the camelcase filter
         $valid_keys = array();
         $derivatives_2 = array();
+        $derivatives_for_create = array();
         foreach ($derivatives as $key => $derivative) {
             foreach ($derivative as $derivative_key => $derivative_val) {
                 if ($derivative_key !== 'alt_file_id') {
@@ -139,23 +139,38 @@ function HookMediaapiEditAftersaveresourcedata()
                     $derivatives_2[$key][mediaapi_filter_underscoretocamelcase($derivative_key)] = $derivative_val;
                 }
             }
+
+            // also remove derivatives with derivativeId. This needs to be in a separate update request
+            if (!empty($media_resource['uuid']) && empty($derivatives_2[$key]['derivativeId'])) {
+                unset($derivatives_2[$key]['derivativeId']);
+                $derivatives_for_create[] = $derivatives_2[$key];
+                unset($derivatives_2[$key]);
+            }
         }
         $derivatives = $derivatives_2;
         unset($derivatives_2);
+
+        // get the access token
+        $access_token = mediaapi_get_accesstoken();
 
         // add the derivative to the resource
         if (!empty($derivatives)) {
             $media_resource['derivatives'] = $derivatives;
         }
 
-        $access_token = mediaapi_get_accesstoken();
-
         if (!empty($media_resource['uuid'])) {
-            $response = mediaapi_update_resource($media_resource['uuid'], $media_resource, $access_token);
+            $response = mediaapi_update_media($media_resource['uuid'], $media_resource, $access_token);
+            if (isset($response->mediaObjectId)) {
+                foreach ($derivatives_for_create as $derivative) {
+                    $derivative['mediaObjectId'] = $response->mediaObjectId;
+                    $response->derivatives[] = mediaapi_create_media($derivative, $access_token, true);
+                }
+            }
         } else {
-            $response = mediaapi_create_resource($media_resource, $access_token);
+            $response = mediaapi_create_media($media_resource, $access_token);
         }
 
+        // actual save in the local db
         if (is_object($response) && isset($response->uuid)) {
             // inject the new uuid
             if (empty($media_resource['uuid'])) {
@@ -169,7 +184,9 @@ function HookMediaapiEditAftersaveresourcedata()
                     sql_query('
                         UPDATE mediaapi_derivatives
                         SET
-                            derivative_id="' . $derivative->derivativeId . '"' .
+                            derivative_id ="' . $derivative->derivativeId . '",
+                            derivative_url="' . $derivative->derivativeUrl . '",
+                            last_published="' . gmdate('Y-m-d H:i:s') . '"' .
                             (isset($derivative->mediaObjectId) ? ', media_object_id="' . $derivative->mediaObjectId . '"' : '') .
                         'WHERE file_name="' . $derivative->fileName . '"'
                     );

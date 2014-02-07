@@ -63,13 +63,21 @@ function HookMediaapiAllPost_savealternativefile($alt_ref, $parent_resource)
 {
     $mediaapi_derivatives = mediaapi_get_derivative_resources($alt_ref);
     if (empty($mediaapi_derivatives)) {
-        $ordinal = sql_value("SELECT max(ordinal)+1 AS value FROM resource_alt_files raf, mediaapi_derivatives md WHERE raf.ref = md.alt_file_id AND raf.resource={$parent_resource}", "");
+        $ordinal = mediaapi_get_max_ordinal($parent_resource);
         mediaapi_insert_derivative_data($parent_resource, $alt_ref, $ordinal);
     } else {
         mediaapi_upsert_derivative_resources($alt_ref, mediaapi_collect_derivative_data());
     }
 }
 
+/**
+ * This hooks will map the naming of the mediaapi fields to camelcased
+ * and preserve it.
+ *
+ * @param array $fields
+ * @param array $field
+ * @return boolean
+ */
 function HookMediaapiAllAdditionalvalcheck($fields, $field)
 {
     global $media_resource;
