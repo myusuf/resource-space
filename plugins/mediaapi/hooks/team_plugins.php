@@ -20,7 +20,7 @@ function HookMediaapiTeam_pluginsInitialise()
             VALUES
             (77, 'uuid', 'MEDIA_OBJECT_UUID', 0, NULL, 1, 1, 0, 0, NULL, 1, 1, NULL, NULL, NULL, 1, NULL, NULL, 1, 0, NULL, 0, 1, NULL, 0, 0, NULL, NULL, 0, NULL, NULL, NULL, NULL)
             ON DUPLICATE KEY UPDATE
-            `name` = 'uuid', `title` = 'MEDIA_OBJECT_UUID'
+            `name` = 'uuid', `title` = 'MEDIA_OBJECT_UUID', `hide_when_uploading` = 1
         ");
         sql_query("
             INSERT INTO `resource_type_field`
