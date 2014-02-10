@@ -50,8 +50,8 @@ function mediaapi_upsert_derivative_resources($ref, array $data)
     $update = "alt_file_id='{$ref}', ";
     foreach ($data as $key => $val) {
         if ($val != "") {
-          //  $update .= "{$key}={$val}', ";
-           $update .= "{$key}=" . mysql_real_escape_string($val);
+          //$update .= "{$key}={$val}', ";
+           $update .= "{$key}=" . "'" .  mysql_real_escape_string($val) ."',";
         }
     }
     $update = rtrim($update, ", ");
