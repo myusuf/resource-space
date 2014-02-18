@@ -12,6 +12,10 @@ class JsonParser {
        $this->filename = $file;
     }
     
+    /**
+     * 
+     * @return type
+     */
     public function getContentArray() {
         
         $string = file_get_contents($this->filename);
