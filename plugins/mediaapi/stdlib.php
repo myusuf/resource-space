@@ -47,11 +47,13 @@ function mediaapi_get_derivative_resources($ref)
  */
 function mediaapi_upsert_derivative_resources($ref, array $data)
 {
+    global $db, $use_mysqli;
+
     $update = "alt_file_id='{$ref}', ";
     foreach ($data as $key => $val) {
         if ($val != "") {
-          //$update .= "{$key}={$val}', ";
-           $update .= "{$key}=" . "'" .  mysql_real_escape_string($val) ."',";
+            $val = (true == $use_mysqli) ? mysqli_real_escape_string($db, $val) : mysql_real_escape_string($val, $db);
+            $update .= "{$key}='{$val}', ";
         }
     }
     $update = rtrim($update, ", ");
