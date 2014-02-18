@@ -1,43 +1,48 @@
 <?php
-
+//include('../plugins/mediaapi/stdlib.php');
+//echo "realpath: " .  realpath('../../../plugins/mediaapi/stdlib.php'); die;
 Class MediaApiClient {
 	private $url;
-	private $method;
-	private $params;
-        private $access_token;
+	
+	
+        private $access_token =null;
+        private $item_count=0;
+        private $page_count=0;
+        private $item_count_perpage = 0;
 
-	public function __construct($url, $method,$params) {
+	public function __construct($url) {
             $this->url = $url;
-            $this->method = $method;
-            $this->params = $params;
+           
 		
 
 	}
-/**
- * 
- * @param type $page
- * @return type
- * 
- * @param type $page
- * @return \type
- */
- 
-   /*
-    *  public function doRequest($page=1, $uuid=null) {
+        
+        /**
+         * 
+         * @return type
+         */
+        public function getItemCount() {
+            return $this->item_count;
+        }
+        /**
+         * 
+         * @return type
+         */
+        public function getPageCount() {
+            return $this->page_count;
+        }
+        /**
+         * 
+         */
+        public function getItemCountPerPage() {
+            return $this->item_count_perpage;
     
-        switch($this->method) {
-            case 'getAll':
-                return $this->getMedia($page);
-		break;
-            case 'getOne':
-                return $this->getOneMedia($uuid);
-            default:
-                echo 'not implemented';
-		break;
-                }
-	}
-    * 
-    */	
+    }
+    
+    
+    public function getHeaders() {
+        
+    }
 
         /**
          * 
@@ -45,7 +50,11 @@ Class MediaApiClient {
          * @return type
          */
 	public function getMedia($params) {
-            $access_token = '804b0e0c08abbab361c645594c0763ef6f3f818e';
+            if(!$this->access_token) {
+                $access_token =  mediaapi_get_accesstoken();
+                $this->access_token = $access_token;
+            } 
+            
             if(isset($params['page'])) {
             $url = "$this->url" . "/page/" . $params['page'];
             } elseif(isset($params['uuid'])) {
@@ -55,39 +64,48 @@ Class MediaApiClient {
             }
             $header = array('Content-Type: application/json', "Authorization: Bearer " .$access_token);
             $process = curl_init();
-            //curl_setopt($process, CURLOPT_HEADER, true);
+            curl_setopt($process, CURLOPT_HEADER, true);
             curl_setopt($process, CURLOPT_HTTPHEADER, $header);
             curl_setopt($process,CURLOPT_URL, $url);
             curl_setopt($process, CURLOPT_RETURNTRANSFER,TRUE);
+            
+            
             $result = curl_exec($process);
+            $header_size = curl_getinfo($process, CURLINFO_HEADER_SIZE);
+           
+            $headers = $this->get_headers_from_curl_response($result);
+            $body = substr($result, $header_size);
+           
+         
+            $this->item_count = $headers["item-count"];
+            $this->page_count = $headers["page-count"];
+            $this->item_count_perpage = $headers['item-count-per-page'];
             curl_close($process);
-            return $result;
+            return $body;
             
 	
         }
-    public function getAccessToken() {
-       $config = $this->getConfigData();
-       $content = "grant_type=" . $config['grant_type'] . "&client_id=" . $config['client_id'] . "&username=" . $config['user_name'] . "&password=" . $config['password'] . "&client_secret=" . $config['client_secret'] . "&scope=" . $config['scope'];
+        
        
-       $request = new Request();
-       $request->setUri($config['url']);
-       $request->setMethod('POST');
-       $request->setContent($content);
-       $client = new Client;
-       $adapter = new \Zend\Http\Client\Adapter\Curl();
-       $adapter->setOptions(array(
-            'curloptions' => array(
-                CURLOPT_POST => 1,
-                CURLOPT_RETURNTRANSFER => 1,
-                CURLOPT_SSL_VERIFYPEER => FALSE,
-                CURLOPT_SSL_VERIFYHOST => FALSE,
-                CURLOPT_HTTPHEADER, array('Content-Type: application/x-www-form-urlencoded')  
-            )
-        ));
-        $client->setAdapter($adapter);
-        $response = $client->dispatch($request);
-        return $response->getContent();
+        
+function get_headers_from_curl_response($response)
+{
+    $headers = array();
+    $header_text = substr($response, 0, strpos($response, "\r\n\r\n"));
+
+    foreach (explode("\r\n", $header_text) as $i => $line)
+        if ($i === 0)
+            $headers['http_code'] = $line;
+        else
+        {
+            list ($key, $value) = explode(': ', $line);
+
+            $headers[$key] = $value;
         }
+
+    return $headers;
+}
+    
 }
 
 
