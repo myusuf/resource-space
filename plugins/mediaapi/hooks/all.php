@@ -63,8 +63,9 @@ function HookMediaapiAllPost_savealternativefile($alt_ref, $parent_resource)
 {
     $mediaapi_derivatives = mediaapi_get_derivative_resources($alt_ref);
     if (empty($mediaapi_derivatives)) {
-        $ordinal = mediaapi_get_max_ordinal($parent_resource);
-        mediaapi_insert_derivative_data($parent_resource, $alt_ref, $ordinal);
+        $data = array();
+        $data['ordinal'] = mediaapi_get_max_ordinal($parent_resource);
+        mediaapi_insert_derivative_data($parent_resource, $alt_ref, $data);
     } else {
         mediaapi_upsert_derivative_resources($alt_ref, mediaapi_collect_derivative_data());
     }

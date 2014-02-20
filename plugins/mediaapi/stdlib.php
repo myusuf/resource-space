@@ -127,17 +127,30 @@ function mediaapi_collect_derivative_data(array $data = null)
  * @param string $derivative_ref  Derivative id/Alternative id
  * @param int    $ordinal         Ordinal for the derivative
  */
-function mediaapi_insert_derivative_data($resource_ref, $derivative_ref, $ordinal = 1, array $data = null)
+function mediaapi_insert_derivative_data($resource_ref, $derivative_ref, array $data = null)
 {
     $dbdata = mediaapi_generate_derivative_metadata($resource_ref, $derivative_ref);
-    $dbdata['media_server_id'] = 1; // verify this later
-    $dbdata['ordinal']    = $ordinal;
-    $dbdata['is_primary'] = ($ordinal === 1) ? 'Y' : 'N';
 
     if (null !== $data) {
         $data = array_merge($dbdata, $data);
     } else {
         $data = $dbdata;
+    }
+
+    // do some default checking
+    if (empty($data['media_server_id'])) {
+        $data['media_server_id'] = 1; // verify this later
+    }
+    if (empty($data['is_primary'])
+        && !empty($data['ordinal'])
+        && $data['ordinal'] === 1
+    ) {
+        $data['is_primary'] = 'Y';
+    } else {
+        $data['is_primary'] = 'N';
+    }
+    if (empty($data['ordinal'])) {
+        $data['ordinal'] = 1;
     }
 
     mediaapi_upsert_derivative_resources($derivative_ref, $data);
