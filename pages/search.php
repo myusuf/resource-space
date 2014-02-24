@@ -31,25 +31,25 @@ $all_field_info=get_fields_for_search_display(array_unique(array_merge($sort_fie
 # get display and normalize display specific variables
 $display=getvalescaped("display",$default_display);setcookie("display",$display);
 
-if ($display=="thumbs"){ 
-	$display_fields	= $thumbs_display_fields;  
+if ($display=="thumbs"){
+	$display_fields	= $thumbs_display_fields;
 	if (isset($search_result_title_height)) { $result_title_height = $search_result_title_height; }
 	$results_title_trim = $search_results_title_trim;
 	$results_title_wordwrap	= $search_results_title_wordwrap;
 	}
-	
-if ($display=="list"){ 
-	$display_fields	= $list_display_fields; 
+
+if ($display=="list"){
+	$display_fields	= $list_display_fields;
 	$results_title_trim = $list_search_results_title_trim;
 	}
-	
-if ($display=="smallthumbs"){ 
-	$display_fields	= $small_thumbs_display_fields; 
+
+if ($display=="smallthumbs"){
+	$display_fields	= $small_thumbs_display_fields;
 	if (isset($small_search_result_title_height)) { $result_title_height = $small_search_result_title_height; }
 	$results_title_trim = $small_search_results_title_trim;
 	$results_title_wordwrap = $small_search_results_title_wordwrap;
 	}
-if ($display=="xlthumbs"){ 
+if ($display=="xlthumbs"){
 	$display_fields = $xl_thumbs_display_fields;
 	if (isset($xl_search_result_title_height)) { $result_title_height = $xl_search_result_title_height; }
 	$results_title_trim = $xl_search_results_title_trim;
@@ -75,7 +75,7 @@ foreach ($display_fields as $display_field)
 			}
 		}
 	}
-$n=0;	
+$n=0;
 $df_add=hook("displayfieldsadd");
 # create a sort_fields array with information for sort fields
 $n=0;
@@ -86,7 +86,7 @@ foreach ($sort_fields as $sort_field)
 	for ($m=0;$m<count($all_field_info);$m++)
 		{
 		if ($all_field_info[$m]["ref"]==$sort_field)
-			{ 
+			{
 			$field_info=$all_field_info[$m];
 			$sf[$n]['ref']=$sort_field;
 			$sf[$n]['title']=$field_info['title'];
@@ -94,7 +94,7 @@ foreach ($sort_fields as $sort_field)
 			}
 		}
 	}
-$n=0;	
+$n=0;
 
 # Append extra search parameters from the quick search.
 if (!$config_search_for_number || !is_numeric($search)) # Don't do this when the search query is numeric, as users typically expect numeric searches to return the resource with that ID and ignore country/date filters.
@@ -113,48 +113,48 @@ if (!$config_search_for_number || !is_numeric($search)) # Don't do this when the
 			if ((strpos($key,"_year")!==false)||(strpos($key,"_month")!==false)||(strpos($key,"_day")!==false))
 				{
 				# Date field
-				
+
 				# Construct the date from the supplied dropdown values
 				$key_part=substr($key,0, strrpos($key, "_"));
 				$field=substr($key_part,6);
                 $value="";
-				if (strpos($search, $field.":")===false) 
+				if (strpos($search, $field.":")===false)
 				    {
                 $key_year=$key_part."_year";
 				$value_year=getvalescaped($key_year,"");
 				if ($value_year!="") $value=$value_year;
 				else $value="nnnn";
-				
+
 				$key_month=$key_part."_month";
 				$value_month=getvalescaped($key_month,"");
 				if ($value_month=="") $value_month.="nn";
-				
+
 				$key_day=$key_part."_day";
 				$value_day=getvalescaped($key_day,"");
 				if ($value_day!="") $value.="|" . $value_month . "|" . $value_day;
 				elseif ($value_month!="nn") $value.="|" . $value_month;
-    				
-    
+
+
     				$search=(($search=="")?"":join(", ",split_keywords($search)) . ", ") . $field . ":" . $value;
 
 				    }
-	            				
+
 				}
 			elseif (strpos($key,"_drop_")!==false)
 				{
 				# Dropdown field
 				# Add keyword exactly as it is as the full value is indexed as a single keyword for dropdown boxes.
 				$search=(($search=="")?"":join(", ",split_keywords($search)) . ", ") . substr($key,11) . ":" . $value;
-				}		
+				}
 			elseif (strpos($key,"_cat_")!==false)
 				{
 				# Category tree field
 				# Add keyword exactly as it is as the full value is indexed as a single keyword for dropdown boxes.
 				$value=str_replace(",",";",$value);
 				if (substr($value,0,1)==";") {$value=substr($value,1);}
-				
+
 				$search=(($search=="")?"":join(", ",split_keywords($search)) . ", ") . substr($key,10) . ":" . $value;
-				}		
+				}
 
 			else
 				{
@@ -182,7 +182,7 @@ if (is_numeric(trim(getvalescaped("searchresourceid","")))){
 	$searchresourceid = trim(getvalescaped("searchresourceid",""));
 	$search = "!resource$searchresourceid";
 }
-	
+
 hook("searchstringprocessing");
 
 
@@ -202,8 +202,8 @@ if (getvalescaped("recentdaylimit","")!="") //set for recent search, don't set c
 	}
 else if($recent_search_period_select==true && strpos($search,"!")===false) //set cookie for paging
 	{
-	$daylimit=getvalescaped("daylimit",""); 
-	setcookie("daylimit",$daylimit); 
+	$daylimit=getvalescaped("daylimit","");
+	setcookie("daylimit",$daylimit);
 	}
 else {$daylimit="";} // clear cookie for new search
 
@@ -230,15 +230,15 @@ if (getvalescaped("resetrestypes","")=="")
 	$restypes=getvalescaped("restypes","");
 	}
 else
-	{ 
+	{
 	$restypes="";
 	reset($_POST);reset($_GET);foreach (array_merge($_GET, $_POST) as $key=>$value)
 
 		{
-		
+
 	    $hiddenfields=Array();
 		//$hiddenfields=explode(",",$hiddenfields);
-		if ($key=="rttickall" && $value=="on"){$restypes="";break;}	
+		if ($key=="rttickall" && $value=="on"){$restypes="";break;}
 		if ((substr($key,0,8)=="resource")&&!in_array($key, $hiddenfields)) {if ($restypes!="") {$restypes.=",";} $restypes.=substr($key,8);}
 		}
 
@@ -256,7 +256,7 @@ if (getvalescaped("search","")!="" && strpos(getvalescaped("search",""),"!")!==f
 	}
 else
 	{
-	$starsearch=getvalescaped("starsearch","");	
+	$starsearch=getvalescaped("starsearch","");
 	setcookie("starsearch",$starsearch);
 }
 
@@ -268,9 +268,9 @@ if (!array_key_exists("search",$_GET) && !array_key_exists("search",$_POST))
 	$sort=getvalescaped("saved_sort","");setcookie("saved_sort",$sort);
 	$archive=getvalescaped("saved_archive",0);setcookie("saved_archive",$archive);
 	}
-	
-hook("searchparameterhandler");	
-	
+
+hook("searchparameterhandler");
+
 # If requested, refresh the collection frame (for redirects from saves)
 if (getvalescaped("refreshcollectionframe","")!="")
 	{
@@ -300,12 +300,12 @@ if (substr($search,0,11)=="!collection")
 	$collection=explode(",",$collection);
 	$collection=$collection[0];
 	$collectiondata=get_collection($collection);
-	
+
 	if ($k!="") {$usercollection=$collection;} # External access - set current collection.
-	
+
 	if (!$collectiondata){?>
 		<script>alert('<?php echo $lang["error-collectionnotfound"];?>');document.location='<?php echo $baseurl."/pages/" . $default_home_page;?>'</script>
-	<?php } 
+	<?php }
 	# Check to see if this user can edit (and therefore reorder) this resource
 	if (($userref==$collectiondata["user"]) || ($collectiondata["allow_changes"]==1) || (checkperm("h")))
 		{
@@ -339,13 +339,13 @@ if ($allow_reorder && $display!="list")
 
 include ("../include/search_title_processing.php");
 
-    
+
 # Special case: numeric searches (resource ID) and one result: redirect immediately to the resource view.
 if ((($config_search_for_number && is_numeric($search)) || $searchresourceid > 0) && is_array($result) && count($result)==1)
 	{
 	redirect($baseurl_short."pages/view.php?ref=" . $result[0]["ref"] . "&search=" . urlencode($search) . "&order_by=" . urlencode($order_by) . "&sort=".$sort."&offset=" . urlencode($offset) . "&archive=" . $archive . "&k=" . $k);
 	}
-	
+
 
 # Include the page header to and render the search results
 include "../include/header.php";
@@ -370,7 +370,7 @@ if ($display_user_rating_stars && $k=="")
 	if ($allow_reorder && $display!="list" && $order_by=="relevance") {
 ?>
 	<script type="text/javascript">
-	
+
 	function ReorderResources(idsInOrder)
 		{
 		var newOrder = [];
@@ -385,9 +385,9 @@ if ($display_user_rating_stars && $k=="")
 		  <?php if (isset($usercollection) && ($usercollection==$collection)) { ?>
 			 UpdateCollectionDisplay('<?php echo isset($k)?urlencode($k):"" ?>');
 		  <?php } ?>
-			} 
+			}
 		});
-		}		
+		}
 
 			jQuery('#CentralSpace').sortable({
 				helper:"clone",
@@ -409,8 +409,8 @@ if ($display_user_rating_stars && $k=="")
 			});
 			jQuery('.ResourcePanelShell').disableSelection();
 			jQuery('.ResourcePanelShellLarge').disableSelection();
-			jQuery('.ResourcePanelShellSmall').disableSelection();			
-	
+			jQuery('.ResourcePanelShellSmall').disableSelection();
+
 	</script>
 <?php }
 	else { ?>
@@ -420,13 +420,13 @@ if ($display_user_rating_stars && $k=="")
 			jQuery('.ResourcePanelShell').enableSelection();
 			jQuery('.ResourcePanelShellLarge').enableSelection();
 			jQuery('.ResourcePanelShellSmall').enableSelection();
-			
-	
+
+
 	</script>
 	<?php }
 
 # Hook to replace all search results (used by ResourceConnect plugin, allows search mechanism to be entirely replaced)
-if (!hook("replacesearchresults")) { 
+if (!hook("replacesearchresults")) {
 
 # Extra CSS to support more height for titles on thumbnails.
 if (isset($result_title_height))
@@ -458,23 +458,23 @@ if ($infobox_image_mode)
 		}
 	</style>
 	<?php
-	
+
 	}
 
 #if (is_array($result)||(isset($collections)&&(count($collections)>0)))
 if (true) # Always show search header now.
 	{
-	$url=$baseurl_short."pages/search.php?search=" . urlencode($search) . "&order_by=" . urlencode($order_by) . "&sort=".urlencode($sort)."&offset=" . urlencode($offset) . "&archive=" . urlencode($archive)."&sort=".urlencode($sort) . "&restypes=" . urlencode($restypes);
+	$url=$baseurl_short."pages/search.php?search=" . urlencode($search) . "&order_by=" . urlencode($order_by) . "&sort=".urlencode($sort)."&offset=" . urlencode($offset) . "&archive=" . urlencode($archive)."&sort=".urlencode($sort) . "&restypes=" . urlencode($restypes) . "&mediaapi_canbepublished=".getvalescaped("mediaapi_canbepublished", "N");
 	?>
 	<div class="TopInpageNav">
 	<div class="InpageNavLeftBlock"><?php echo $lang["youfound"]?>:<br /><span class="Selected"><?php
 	$resources_count=is_array($result)?count($result):0;
-	if (isset($collections)) 
+	if (isset($collections))
 	    {
 	    $results_count=count($collections)+$resources_count;
         echo number_format($results_count)?><?php echo ($results_count==$max_results)?"+":""?></span> <?php if ($results_count==1){echo $lang["youfoundresult"];} else {echo $lang["youfoundresults"];}
-	    } 
-	else 
+	    }
+	else
 	    {
 	    echo number_format($resources_count)?><?php echo ($resources_count==$max_results)?"+":""?></span> <?php if ($resources_count==1){echo $lang["youfoundresource"];} else {echo $lang["youfoundresources"];}
 	    }
@@ -494,44 +494,44 @@ if (true) # Always show search header now.
 	<?php if ($xlthumbs==true) { ?> <?php if ($display=="xlthumbs") { ?><span class="xlthumbsiconactive">&nbsp;</span><?php } else { ?><a href="<?php echo $url?>&display=xlthumbs&k=<?php echo urlencode($k) ?>" title='Extra Large Thumbnails' onClick="return CentralSpaceLoad(this);"><span class="xlthumbsicon">&nbsp;</span></a><?php } ?>&nbsp;<?php } ?>
 	<?php if ($display=="thumbs") { ?> <span class="largethumbsiconactive">&nbsp;</span><?php } else { ?><a href="<?php echo $url?>&display=thumbs&k=<?php echo urlencode($k) ?>" title='Large Thumbnails' onClick="return CentralSpaceLoad(this);"><span class="largethumbsicon">&nbsp;</span></a><?php } ?>
 	<?php if ($smallthumbs==true) { ?> <?php if ($display=="smallthumbs") { ?><span class="smallthumbsiconactive">&nbsp;</span><?php } else { ?><a href="<?php echo $url?>&display=smallthumbs&k=<?php echo urlencode($k)?>" title='Small Thumbnails' onClick="return CentralSpaceLoad(this);"><span class="smallthumbsicon">&nbsp;</span></a><?php } } ?>
-	<?php if ($display=="list") { ?> <span class="smalllisticonactive">&nbsp;</span><?php } else { ?><a href="<?php echo $url?>&display=list&k=<?php echo urlencode($k) ?>" title='List View' onClick="return CentralSpaceLoad(this);"><span class="smalllisticon">&nbsp;</span></a><?php } ?> <?php hook("adddisplaymode"); ?> 
+	<?php if ($display=="list") { ?> <span class="smalllisticonactive">&nbsp;</span><?php } else { ?><a href="<?php echo $url?>&display=list&k=<?php echo urlencode($k) ?>" title='List View' onClick="return CentralSpaceLoad(this);"><span class="smalllisticon">&nbsp;</span></a><?php } ?> <?php hook("adddisplaymode"); ?>
 
 <?php } else { ?>
-	
+
 	<?php if ($xlthumbs==true) { ?> <?php if ($display=="xlthumbs") { ?><span class="Selected"><?php echo $lang["xlthumbs"]?></span><?php } else { ?><a href="<?php echo $url?>&display=xlthumbs&k=<?php echo urlencode($k) ?>" onClick="return CentralSpaceLoad(this);"><?php echo $lang["xlthumbs"]?></a><?php } ?>&nbsp; |&nbsp;<?php } ?>
-	<?php if ($display=="thumbs") { ?> <span class="Selected"><?php echo $lang["largethumbs"]?></span><?php } else { ?><a href="<?php echo $url?>&display=thumbs&k=<?php echo urlencode($k) ?>" onClick="return CentralSpaceLoad(this);"><?php echo $lang["largethumbs"]?></a><?php } ?>&nbsp; |&nbsp; 
+	<?php if ($display=="thumbs") { ?> <span class="Selected"><?php echo $lang["largethumbs"]?></span><?php } else { ?><a href="<?php echo $url?>&display=thumbs&k=<?php echo urlencode($k) ?>" onClick="return CentralSpaceLoad(this);"><?php echo $lang["largethumbs"]?></a><?php } ?>&nbsp; |&nbsp;
 	<?php if ($smallthumbs==true) { ?> <?php if ($display=="smallthumbs") { ?><span class="Selected"><?php echo $lang["smallthumbs"]?></span><?php } else { ?><a href="<?php echo $url?>&display=smallthumbs&k=<?php echo urlencode($k) ?>" onClick="return CentralSpaceLoad(this);"><?php echo $lang["smallthumbs"]?></a><?php } ?>&nbsp; |&nbsp;<?php } ?>
-	<?php if ($display=="list") { ?> <span class="Selected"><?php echo $lang["list"]?></span><?php } else { ?><a href="<?php echo $url?>&display=list&k=<?php echo urlencode($k) ?>" onClick="return CentralSpaceLoad(this);"><?php echo $lang["list"]?></a><?php } ?> <?php hook("adddisplaymode"); ?> 
-	
+	<?php if ($display=="list") { ?> <span class="Selected"><?php echo $lang["list"]?></span><?php } else { ?><a href="<?php echo $url?>&display=list&k=<?php echo urlencode($k) ?>" onClick="return CentralSpaceLoad(this);"><?php echo $lang["list"]?></a><?php } ?> <?php hook("adddisplaymode"); ?>
+
 
 	<?php } ?>
 	</div>
-	
+
 	<?php if ($display_selector_dropdowns){?>
 	<div class="InpageNavLeftBlock"><?php echo ucfirst($lang["perpage"]);?>:<br />
 		<select class="medcomplementwidth ListDropdown" style="width:auto" id="resultsdisplay" name="resultsdisplay" onchange="CentralSpaceLoad(this.value,true);">
 		<?php for($n=0;$n<count($results_display_array);$n++){
 			if ($display_selector_dropdowns){?>
-				<option <?php if ($per_page==$results_display_array[$n]){?>selected="selected"<?php } ?> value="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&order_by=<?php echo urlencode($order_by)?>&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k) ?>&per_page=<?php echo urlencode($results_display_array[$n])?>&sort=<?php echo urlencode($sort)?>"><?php echo urlencode($results_display_array[$n])?></option>
+				<option <?php if ($per_page==$results_display_array[$n]){?>selected="selected"<?php } ?> value="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&order_by=<?php echo urlencode($order_by)?>&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k) ?>&per_page=<?php echo urlencode($results_display_array[$n])?>&sort=<?php echo urlencode($sort)?>&mediaapi_canbepublished=<?php echo getvalescaped("mediaapi_canbepublished", "N")?>"><?php echo urlencode($results_display_array[$n])?></option>
 			<?php } ?>
-		<?php } ?>	
+		<?php } ?>
 		</select>
 	</div>
-	<?php } 
-	
+	<?php }
+
 	if ($display_selector_dropdowns && $recent_search_period_select && strpos($search,"!")===false && getvalescaped("recentdaylimit","")==""){?>
 	<div class="InpageNavLeftBlock"><?php echo $lang["period"]?>:<br />
 		<select class="medcomplementwidth ListDropdown" style="width:auto" id="resultsdisplay" name="resultsdisplay" onchange="CentralSpaceLoad(this.value,true);">
 		<?php for($n=0;$n<count($recent_search_period_array);$n++){
 			if ($display_selector_dropdowns){?>
-				<option <?php if ($daylimit==$recent_search_period_array[$n]){?>selected="selected"<?php } ?> value="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&order_by=<?php echo urlencode($order_by)?>&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k) ?>&per_page=<?php echo urlencode($per_page)?>&sort=<?php echo urlencode($sort)?>"><?php echo urlencode($results_display_array[$n])?>&daylimit=<?php echo urlencode(str_replace("?",$recent_search_period_array[$n],$lang["lastndays"]))?></option>
+				<option <?php if ($daylimit==$recent_search_period_array[$n]){?>selected="selected"<?php } ?> value="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&order_by=<?php echo urlencode($order_by)?>&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k) ?>&per_page=<?php echo urlencode($per_page)?>&sort=<?php echo urlencode($sort)?>"><?php echo urlencode($results_display_array[$n])?>&daylimit=<?php echo urlencode(str_replace("?",$recent_search_period_array[$n],$lang["lastndays"]))?>&mediaapi_canbepublished=<?php echo getvalescaped("mediaapi_canbepublished", "N")?></option>
 			<?php } ?>
 		<?php } ?>
-		<option <?php if ($daylimit==""){?>selected="selected"<?php } ?> value="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&order_by=<?php echo urlencode($order_by)?>&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k) ?>&per_page=<?php echo urlencode($per_page)?>&sort=<?php echo urlencode($sort)?>"><?php echo urlencode($results_display_array[$n])?>&daylimit=<?php echo $lang["anyday"] ?></option>
+		<option <?php if ($daylimit==""){?>selected="selected"<?php } ?> value="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&order_by=<?php echo urlencode($order_by)?>&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k) ?>&per_page=<?php echo urlencode($per_page)?>&sort=<?php echo urlencode($sort)?>"><?php echo urlencode($results_display_array[$n])?>&daylimit=<?php echo $lang["anyday"] ?>&mediaapi_canbepublished=<?php echo getvalescaped("mediaapi_canbepublished", "N")?></option>
 		</select>
 	</div>
-	<?php } 
-	
+	<?php }
+
 	# order by
 	#if (strpos($search,"!")===false)
 	if ($search!="!duplicates" && $search!="!unused") # Ordering enabled for collections/themes too now at the request of N Ward / Oxfam
@@ -539,88 +539,88 @@ if (true) # Always show search header now.
 		$rel=$lang["relevance"];
 		if(!hook("replaceasadded")) { if (strpos($search,"!")!==false) {$rel=$lang["asadded"];} }
 		?>
-		<div class="InpageNavLeftBlock "><?php echo $lang["sortorder"]?>:<br /><?php if ($order_by=="relevance") {?><span class="Selected"><?php echo $rel?></span><?php } else { ?><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&order_by=relevance&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k)?>&restypes=<?php echo urlencode($restypes) ?>" onClick="return CentralSpaceLoad(this);"><?php echo $rel?></a><?php } ?>
-		
+		<div class="InpageNavLeftBlock "><?php echo $lang["sortorder"]?>:<br /><?php if ($order_by=="relevance") {?><span class="Selected"><?php echo $rel?></span><?php } else { ?><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&order_by=relevance&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k)?>&restypes=<?php echo urlencode($restypes) ?>&mediaapi_canbepublished=<?php echo getvalescaped("mediaapi_canbepublished", "N")?>" onClick="return CentralSpaceLoad(this);"><?php echo $rel?></a><?php } ?>
+
 		<?php if ($random_sort){?>
 		&nbsp;|&nbsp;
-		<?php if ($order_by=="random") {?><span class="Selected"><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&order_by=random&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k)?>&restypes=<?php echo urlencode($restypes) ?>&sort=<?php echo urlencode($revsort) ?>" onClick="return CentralSpaceLoad(this);"><?php echo $lang["random"]?></a></span><?php } else { ?><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&order_by=random&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k)?>&restypes=<?php echo urlencode($restypes) ?>" onClick="return CentralSpaceLoad(this);"><?php echo $lang["random"]?></a><?php } ?>
+		<?php if ($order_by=="random") {?><span class="Selected"><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&order_by=random&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k)?>&restypes=<?php echo urlencode($restypes) ?>&sort=<?php echo urlencode($revsort) ?>&mediaapi_canbepublished=<?php echo getvalescaped("mediaapi_canbepublished", "N")?>" onClick="return CentralSpaceLoad(this);"><?php echo $lang["random"]?></a></span><?php } else { ?><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&order_by=random&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k)?>&restypes=<?php echo urlencode($restypes) ?>&mediaapi_canbepublished=<?php echo getvalescaped("mediaapi_canbepublished", "N")?>" onClick="return CentralSpaceLoad(this);"><?php echo $lang["random"]?></a><?php } ?>
 		<?php } ?>
 
         <?php if ($popularity_sort){?>
 		&nbsp;|&nbsp;
-		<?php if ($order_by=="popularity") {?><span class="Selected"><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&order_by=popularity&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k)?>&restypes=<?php echo urlencode($restypes) ?>&sort=<?php echo urlencode($revsort)?>" onClick="return CentralSpaceLoad(this);"><?php echo $lang["popularity"]?></a><div class="<?php echo urlencode($sort)?>">&nbsp;</div></span><?php } else { ?><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&order_by=popularity&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k)?>&restypes=<?php echo urlencode($restypes) ?>" onClick="return CentralSpaceLoad(this);"><?php echo $lang["popularity"]?></a><?php } ?>
+		<?php if ($order_by=="popularity") {?><span class="Selected"><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&order_by=popularity&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k)?>&restypes=<?php echo urlencode($restypes) ?>&sort=<?php echo urlencode($revsort)?>&mediaapi_canbepublished=<?php echo getvalescaped("mediaapi_canbepublished", "N")?>" onClick="return CentralSpaceLoad(this);"><?php echo $lang["popularity"]?></a><div class="<?php echo urlencode($sort)?>">&nbsp;</div></span><?php } else { ?><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&order_by=popularity&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k)?>&restypes=<?php echo urlencode($restypes) ?>&mediaapi_canbepublished=<?php echo getvalescaped("mediaapi_canbepublished", "N")?>" onClick="return CentralSpaceLoad(this);"><?php echo $lang["popularity"]?></a><?php } ?>
         <?php } ?>
-		
+
 		<?php if ($orderbyrating) { ?>
 		&nbsp;|&nbsp;
-		<?php if ($order_by=="rating") {?><span class="Selected"><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&order_by=rating&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k)?>&restypes=<?php echo urlencode($restypes) ?>&sort=<?php echo urlencode($revsort)?>" onClick="return CentralSpaceLoad(this);"><?php echo $lang["rating"]?></a><div class="<?php echo urlencode($sort)?>">&nbsp;</div></span><?php } else { ?><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&order_by=rating&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k)?>&restypes=<?php echo urlencode($restypes) ?>" onClick="return CentralSpaceLoad(this);"><?php echo $lang["rating"]?></a><?php } ?>
+		<?php if ($order_by=="rating") {?><span class="Selected"><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&order_by=rating&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k)?>&restypes=<?php echo urlencode($restypes) ?>&sort=<?php echo urlencode($revsort)?>&mediaapi_canbepublished=<?php echo getvalescaped("mediaapi_canbepublished", "N")?>" onClick="return CentralSpaceLoad(this);"><?php echo $lang["rating"]?></a><div class="<?php echo urlencode($sort)?>">&nbsp;</div></span><?php } else { ?><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&order_by=rating&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k)?>&restypes=<?php echo urlencode($restypes) ?>&mediaapi_canbepublished=<?php echo getvalescaped("mediaapi_canbepublished", "N")?>" onClick="return CentralSpaceLoad(this);"><?php echo $lang["rating"]?></a><?php } ?>
 		<?php } ?>
-		
+
 		<?php if ($date_column){?>
 		&nbsp;|&nbsp;
-		<?php if ($order_by=="date") {?><span class="Selected"><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&order_by=date&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k)?>&restypes=<?php echo urlencode($restypes) ?>&sort=<?php echo urlencode($revsort)?>" onClick="return CentralSpaceLoad(this);"><?php echo $lang["date"]?></a><div class="<?php echo urlencode($sort)?>">&nbsp;</div></span><?php } else { ?><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&order_by=date&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k)?>&restypes=<?php echo urlencode($restypes) ?>" onClick="return CentralSpaceLoad(this);"><?php echo $lang["date"]?></a><?php } ?>
+		<?php if ($order_by=="date") {?><span class="Selected"><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&order_by=date&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k)?>&restypes=<?php echo urlencode($restypes) ?>&sort=<?php echo urlencode($revsort)?>&mediaapi_canbepublished=<?php echo getvalescaped("mediaapi_canbepublished", "N")?>" onClick="return CentralSpaceLoad(this);"><?php echo $lang["date"]?></a><div class="<?php echo urlencode($sort)?>">&nbsp;</div></span><?php } else { ?><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&order_by=date&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k)?>&restypes=<?php echo urlencode($restypes) ?>&mediaapi_canbepublished=<?php echo getvalescaped("mediaapi_canbepublished", "N")?>" onClick="return CentralSpaceLoad(this);"><?php echo $lang["date"]?></a><?php } ?>
 		<?php } ?>
-		
+
 		<?php if ($colour_sort) { ?>
 		&nbsp;|&nbsp;
-		<?php if ($order_by=="colour") {?><span class="Selected"><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&order_by=colour&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k)?>&restypes=<?php echo urlencode($restypes) ?>&sort=<?php echo urlencode($revsort)?>" onClick="return CentralSpaceLoad(this);"><?php echo $lang["colour"]?></a><div class="<?php echo urlencode($sort)?>">&nbsp;</div></span><?php } else { ?><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&order_by=colour&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k)?>&restypes=<?php echo urlencode($restypes) ?>" onClick="return CentralSpaceLoad(this);"><?php echo $lang["colour"]?></a><?php } ?>
+		<?php if ($order_by=="colour") {?><span class="Selected"><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&order_by=colour&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k)?>&restypes=<?php echo urlencode($restypes) ?>&sort=<?php echo urlencode($revsort)?>&mediaapi_canbepublished=<?php echo getvalescaped("mediaapi_canbepublished", "N")?>" onClick="return CentralSpaceLoad(this);"><?php echo $lang["colour"]?></a><div class="<?php echo urlencode($sort)?>">&nbsp;</div></span><?php } else { ?><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&order_by=colour&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k)?>&restypes=<?php echo urlencode($restypes) ?>&mediaapi_canbepublished=<?php echo getvalescaped("mediaapi_canbepublished", "N")?>" onClick="return CentralSpaceLoad(this);"><?php echo $lang["colour"]?></a><?php } ?>
 		<?php } ?>
-		
+
 		<?php if ($order_by_resource_id) { ?>
 		&nbsp;|&nbsp;
-		<?php if ($order_by=="resourceid") {?><span class="Selected"><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&order_by=resourceid&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k)?>&restypes=<?php echo urlencode($restypes) ?>&sort=<?php echo urlencode($revsort)?>" onClick="return CentralSpaceLoad(this);"><?php echo $lang["resourceid"]?></a><div class="<?php echo urlencode($sort)?>">&nbsp;</div></span><?php } else { ?><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&order_by=resourceid&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k)?>&restypes=<?php echo urlencode($restypes) ?>" onClick="return CentralSpaceLoad(this);"><?php echo $lang["resourceid"]?></a><?php } ?>
+		<?php if ($order_by=="resourceid") {?><span class="Selected"><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&order_by=resourceid&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k)?>&restypes=<?php echo urlencode($restypes) ?>&sort=<?php echo urlencode($revsort)?>&mediaapi_canbepublished=<?php echo getvalescaped("mediaapi_canbepublished", "N")?>" onClick="return CentralSpaceLoad(this);"><?php echo $lang["resourceid"]?></a><div class="<?php echo urlencode($sort)?>">&nbsp;</div></span><?php } else { ?><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&order_by=resourceid&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k)?>&restypes=<?php echo urlencode($restypes) ?>&mediaapi_canbepublished=<?php echo getvalescaped("mediaapi_canbepublished", "N")?>" onClick="return CentralSpaceLoad(this);"><?php echo $lang["resourceid"]?></a><?php } ?>
 		<?php } ?>
-		
+
 		<?php if ($order_by_resource_type){?>
 		&nbsp;|&nbsp;
-		<?php if ($order_by=="resourcetype") {?> <span class="Selected"><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&order_by=resourcetype&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k)?>&restypes=<?php echo urlencode($restypes) ?>&sort=<?php echo urlencode($revsort)?>" onClick="return CentralSpaceLoad(this);"><?php echo $lang["type"]?></a><div class="<?php echo urlencode($sort)?>">&nbsp;</div></span><?php } else { ?><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&order_by=resourcetype&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k)?>&restypes=<?php echo urlencode($restypes) ?>" onClick="return CentralSpaceLoad(this);"><?php echo $lang["type"]?></a><?php } ?>
+		<?php if ($order_by=="resourcetype") {?> <span class="Selected"><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&order_by=resourcetype&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k)?>&restypes=<?php echo urlencode($restypes) ?>&sort=<?php echo urlencode($revsort)?>&mediaapi_canbepublished=<?php echo getvalescaped("mediaapi_canbepublished", "N")?>" onClick="return CentralSpaceLoad(this);"><?php echo $lang["type"]?></a><div class="<?php echo urlencode($sort)?>">&nbsp;</div></span><?php } else { ?><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&order_by=resourcetype&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k)?>&restypes=<?php echo urlencode($restypes) ?>&mediaapi_canbepublished=<?php echo getvalescaped("mediaapi_canbepublished", "N")?>" onClick="return CentralSpaceLoad(this);"><?php echo $lang["type"]?></a><?php } ?>
 		<?php } ?>
-		
+
 		<?php # add thumbs_display_fields to sort order links for thumbs views
 		if (count($sf)>0){
 			for ($x=0;$x<count($sf);$x++)
 				{
-				if (!isset($metadata_template_title_field)){$metadata_template_title_field=false;} 
+				if (!isset($metadata_template_title_field)){$metadata_template_title_field=false;}
 				if ($sf[$x]['ref']!=$metadata_template_title_field){?>
 				&nbsp;|&nbsp;
-				<?php if ($order_by=="field".$sf[$x]['ref']) {?><span class="Selected"><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&sort=<?php echo urlencode($revsort)?>&order_by=field<?php echo $sf[$x]['ref']?>&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k)?>&restypes=<?php echo urlencode($restypes) ?>" onClick="return CentralSpaceLoad(this);"><?php echo htmlspecialchars($sf[$x]['title'])?></a><div class="<?php echo urlencode($sort)?>">&nbsp;</div></span><?php } else { ?><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&order_by=field<?php echo $sf[$x]['ref']?>&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k)?>&restypes=<?php echo urlencode($restypes) ?>" onClick="return CentralSpaceLoad(this);"><?php echo htmlspecialchars($sf[$x]['title'])?></a><?php } ?>
+				<?php if ($order_by=="field".$sf[$x]['ref']) {?><span class="Selected"><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&sort=<?php echo urlencode($revsort)?>&order_by=field<?php echo $sf[$x]['ref']?>&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k)?>&restypes=<?php echo urlencode($restypes) ?>" onClick="return CentralSpaceLoad(this);"><?php echo htmlspecialchars($sf[$x]['title'])?></a><div class="<?php echo urlencode($sort)?>">&nbsp;</div></span><?php } else { ?><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&order_by=field<?php echo $sf[$x]['ref']?>&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k)?>&restypes=<?php echo urlencode($restypes) ?>&mediaapi_canbepublished=<?php echo getvalescaped("mediaapi_canbepublished", "N")?>" onClick="return CentralSpaceLoad(this);"><?php echo htmlspecialchars($sf[$x]['title'])?></a><?php } ?>
 				<?php } ?>
 				<?php } ?>
-			<?php } ?>		
-		
+			<?php } ?>
+
 		<?php hook("sortorder");?>
 		</div>
 		<?php
-		} 
+		}
 		if (!$display_selector_dropdowns){?>
 		<div class="InpageNavLeftBlock"><?php echo ucfirst($lang["perpage"]);?>:<br />
-		<?php 
+		<?php
 		for($n=0;$n<count($results_display_array);$n++){?>
-		<?php if ($per_page==$results_display_array[$n]){?><span class="Selected"><?php echo urlencode($results_display_array[$n])?></span><?php } else { ?><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&order_by=<?php echo urlencode($order_by)?>&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k)?>&restypes=<?php echo urlencode($restypes) ?>&per_page=<?php echo urlencode($results_display_array[$n])?>&sort=<?php echo urlencode($sort)?>" onClick="return CentralSpaceLoad(this);"><?php echo urlencode($results_display_array[$n])?></a><?php } ?><?php if ($n>-1&&$n<count($results_display_array)-1){?>&nbsp;|<?php } ?>
+		<?php if ($per_page==$results_display_array[$n]){?><span class="Selected"><?php echo urlencode($results_display_array[$n])?></span><?php } else { ?><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&order_by=<?php echo urlencode($order_by)?>&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k)?>&restypes=<?php echo urlencode($restypes) ?>&per_page=<?php echo urlencode($results_display_array[$n])?>&sort=<?php echo urlencode($sort)?>&mediaapi_canbepublished=<?php echo getvalescaped("mediaapi_canbepublished", "N")?>" onClick="return CentralSpaceLoad(this);"><?php echo urlencode($results_display_array[$n])?></a><?php } ?><?php if ($n>-1&&$n<count($results_display_array)-1){?>&nbsp;|<?php } ?>
 		<?php } ?>
 		</div>
-		<?php } 
-	
+		<?php }
+
 		if (!$display_selector_dropdowns && $recent_search_period_select && strpos($search,"!")===false && getvalescaped("recentdaylimit","")==""){?>
 		<div class="InpageNavLeftBlock"><?php echo $lang["period"]?>:<br />
-		<?php 
+		<?php
 		for($n=0;$n<count($recent_search_period_array);$n++){
-			if ($daylimit==$recent_search_period_array[$n]){?><span class="Selected"><?php echo htmlspecialchars(str_replace("?",$recent_search_period_array[$n],$lang["lastndays"]))?> </span>&nbsp;|&nbsp;<?php } else { ?><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&order_by=<?php echo urlencode($order_by)?>&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k)?>&restypes=<?php echo urlencode($restypes) ?>&per_page=<?php echo urlencode($per_page)?>&sort=<?php echo urlencode($sort)?>&daylimit=<?php echo urlencode($recent_search_period_array[$n])?>" onClick="return CentralSpaceLoad(this);"><?php echo htmlspecialchars(str_replace("?",$recent_search_period_array[$n],$lang["lastndays"]))?></a>&nbsp;|&nbsp;<?php } 
+			if ($daylimit==$recent_search_period_array[$n]){?><span class="Selected"><?php echo htmlspecialchars(str_replace("?",$recent_search_period_array[$n],$lang["lastndays"]))?> </span>&nbsp;|&nbsp;<?php } else { ?><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&order_by=<?php echo urlencode($order_by)?>&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k)?>&restypes=<?php echo urlencode($restypes) ?>&per_page=<?php echo urlencode($per_page)?>&sort=<?php echo urlencode($sort)?>&daylimit=<?php echo urlencode($recent_search_period_array[$n])?>&mediaapi_canbepublished=<?php echo getvalescaped("mediaapi_canbepublished", "N")?>" onClick="return CentralSpaceLoad(this);"><?php echo htmlspecialchars(str_replace("?",$recent_search_period_array[$n],$lang["lastndays"]))?></a>&nbsp;|&nbsp;<?php }
 			}
-		if ($daylimit==""){?><span class="Selected"><?php echo $lang["all"] ?></span><?php } else { ?><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&order_by=<?php echo urlencode($order_by)?>&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k)?>&restypes=<?php echo urlencode($restypes) ?>&per_page=<?php echo urlencode($per_page)?>&sort=<?php echo urlencode($sort)?>&daylimit=" onClick="return CentralSpaceLoad(this);"><?php echo $lang["all"]?></a><?php } 
-		?>				
+		if ($daylimit==""){?><span class="Selected"><?php echo $lang["all"] ?></span><?php } else { ?><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&order_by=<?php echo urlencode($order_by)?>&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k)?>&restypes=<?php echo urlencode($restypes) ?>&per_page=<?php echo urlencode($per_page)?>&sort=<?php echo urlencode($sort)?>&daylimit=&mediaapi_canbepublished=<?php echo getvalescaped("mediaapi_canbepublished", "N")?>" onClick="return CentralSpaceLoad(this);"><?php echo $lang["all"]?></a><?php }
+		?>
 		</div>
-		<?php } ?>		
-		
+		<?php } ?>
+
 	<?php
 
-		
+
 	$results=count($result);
 	$totalpages=ceil($results/$per_page);
 	if ($offset>$results) {$offset=0;}
 	$curpage=floor($offset/$per_page)+1;
-	$url=$baseurl_short."pages/search.php?search=" . urlencode($search) . "&order_by=" . urlencode($order_by) . "&sort=".$sort."&archive=" . $archive . "&k=" . $k."&sort=".$sort. "&restypes=" . urlencode($restypes);	
-	
+	$url=$baseurl_short."pages/search.php?search=" . urlencode($search) . "&order_by=" . urlencode($order_by) . "&sort=".$sort."&archive=" . $archive . "&k=" . $k."&sort=".$sort. "&restypes=" . urlencode($restypes) . "&mediaapi_canbepublished=" . getvalescaped("mediaapi_canbepublished", "N");
+
 	pager();
 	$draw_pager=true;
 	?>
@@ -641,36 +641,36 @@ if (true) # Always show search header now.
 	        $count_result=count($result);
 	        $collections_compact_style_titleview=true;
 	        hook("beforecollectiontoolscolumn");
-	         
+
 	        echo $lang["tools"].": ";
 	        draw_compact_style_selector($cinfo["ref"]);
 	        ?><br /><br /><div class="clearerleft"></div><?php
 	        $collection_compact_style_titleview=false;
 	        ?>
-	    <?php } /*end if a collection search and compact_style - action selector*/ ?>    
+	    <?php } /*end if a collection search and compact_style - action selector*/ ?>
     <?php }
     	}
      ?>
 
-    <?php		
+    <?php
 
 	hook("beforesearchresults");
-	
+
 	# Archive link
-	if (($archive==0) && (strpos($search,"!")===false) && $archive_search) { 
+	if (($archive==0) && (strpos($search,"!")===false) && $archive_search) {
 	$arcresults=do_search($search,$restypes,$order_by,2,0);
 	if (is_array($arcresults)) {$arcresults=count($arcresults);} else {$arcresults=0;}
-	if ($arcresults>0) 
+	if ($arcresults>0)
 		{
 		?>
-		<div class="SearchOptionNav"><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&archive=2" onClick="return CentralSpaceLoad(this);">&gt;&nbsp;<?php echo $lang["view"]?> <span class="Selected"><?php echo number_format($arcresults)?></span> <?php echo ($arcresults==1)?$lang["match"]:$lang["matches"]?> <?php echo $lang["inthearchive"]?></a></div>
-		<?php 
+		<div class="SearchOptionNav"><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&archive=2&mediaapi_canbepublished=<?php echo getvalescaped("mediaapi_canbepublished", "N")?>" onClick="return CentralSpaceLoad(this);">&gt;&nbsp;<?php echo $lang["view"]?> <span class="Selected"><?php echo number_format($arcresults)?></span> <?php echo ($arcresults==1)?$lang["match"]:$lang["matches"]?> <?php echo $lang["inthearchive"]?></a></div>
+		<?php
 		}
 	else
 		{
 		?>
 		<div class="InpageNavLeftBlock">&gt;&nbsp;<?php echo $lang["nomatchesinthearchive"]?></div>
-		<?php 
+		<?php
 		}
 	}
 	if (!$collections_compact_style){echo $search_title_links;}
@@ -681,26 +681,26 @@ if (true) # Always show search header now.
 	<div class="clearerleft"></div>
 	<?php
 
-		
+
 	if (!is_array($result) && empty($collections))
 		{
 		// No matches found
 		?>
-		<div class="BasicsBox"> 
+		<div class="BasicsBox">
 		  <div class="NoFind">
 			<p><?php echo $lang["searchnomatches"]?></p>
 			<?php if ($result!="")
 			{
 			?>
-			<p><?php echo $lang["try"]?>: <a onClick="return CentralSpaceLoad(this,true);" href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode(strip_tags($result))?>"><?php echo stripslashes($result)?></a></p>
+			<p><?php echo $lang["try"]?>: <a onClick="return CentralSpaceLoad(this,true);" href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode(strip_tags($result))?>&mediaapi_canbepublished=<?php echo getvalescaped("mediaapi_canbepublished", "N")?>"><?php echo stripslashes($result)?></a></p>
 			<?php $result=array();
 			}
 			else
 			{
 			?>
-			<p><?php if (strpos($search,"country:")!==false) { ?><p><?php echo $lang["tryselectingallcountries"]?> <?php } 
-			elseif (strpos($search,"year:")!==false) { ?><p><?php echo $lang["tryselectinganyyear"]?> <?php } 
-			elseif (strpos($search,"month:")!==false) { ?><p><?php echo $lang["tryselectinganymonth"]?> <?php } 
+			<p><?php if (strpos($search,"country:")!==false) { ?><p><?php echo $lang["tryselectingallcountries"]?> <?php }
+			elseif (strpos($search,"year:")!==false) { ?><p><?php echo $lang["tryselectinganyyear"]?> <?php }
+			elseif (strpos($search,"month:")!==false) { ?><p><?php echo $lang["tryselectinganymonth"]?> <?php }
 			else 		{?><?php echo $lang["trybeinglessspecific"]?><?php } ?> <?php echo $lang["enteringfewerkeywords"]?></p>
 			<?php
 			}
@@ -719,36 +719,36 @@ if (true) # Always show search header now.
 		<div class="Listview">
 		<table border="0" cellspacing="0" cellpadding="0" class="ListviewStyle">
 
-		<?php if(!hook("replacelistviewtitlerow")){?>	
+		<?php if(!hook("replacelistviewtitlerow")){?>
 		<tr class="ListviewTitleStyle">
 		<?php if (!hook("listcheckboxesheader")){?>
 		<?php if ($use_checkboxes_for_selection){?><td><?php echo $lang['addremove'];?></td><?php } ?>
-		<?php } # end hook listcheckboxesheader 
+		<?php } # end hook listcheckboxesheader
 
 		for ($x=0;$x<count($df);$x++)
 			{?>
-			<?php if ($order_by=="field".$df[$x]['ref']) {?><td class="Selected"><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&sort=<?php echo urlencode($revsort)?>&order_by=field<?php echo $df[$x]['ref']?>&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k)?>&restypes=<?php echo urlencode($restypes) ?>" onClick="return CentralSpaceLoad(this);"><?php echo htmlspecialchars($df[$x]['title'])?></a><div class="<?php echo urlencode($sort)?>">&nbsp;</div></td><?php } else { ?><td><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&order_by=field<?php echo $df[$x]['ref']?>&sort=<?php echo urlencode($revsort)?>&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k)?>&restypes=<?php echo urlencode($restypes) ?>" onClick="return CentralSpaceLoad(this);"><?php echo htmlspecialchars($df[$x]['title'])?></a></td><?php } ?>
+			<?php if ($order_by=="field".$df[$x]['ref']) {?><td class="Selected"><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&sort=<?php echo urlencode($revsort)?>&order_by=field<?php echo $df[$x]['ref']?>&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k)?>&restypes=<?php echo urlencode($restypes) ?>&mediaapi_canbepublished=<?php echo getvalescaped("mediaapi_canbepublished", "N")?>" onClick="return CentralSpaceLoad(this);"><?php echo htmlspecialchars($df[$x]['title'])?></a><div class="<?php echo urlencode($sort)?>">&nbsp;</div></td><?php } else { ?><td><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&order_by=field<?php echo $df[$x]['ref']?>&sort=<?php echo urlencode($revsort)?>&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k)?>&restypes=<?php echo urlencode($restypes) ?>" onClick="return CentralSpaceLoad(this);"><?php echo htmlspecialchars($df[$x]['title'])?></a></td><?php } ?>
 			<?php }
-		
-		if ($display_user_rating_stars && $k==""){?><td><?php if ($order_by=="popularity") {?><span class="Selected"><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&order_by=popularity&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k)?>&restypes=<?php echo urlencode($restypes) ?>&sort=<?php echo urlencode($revsort)?>" onClick="return CentralSpaceLoad(this);"><?php echo $lang["popularity"]?></a><div class="<?php echo urlencode($sort)?>">&nbsp;</div></span><?php } else { ?><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&order_by=popularity&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k)?>&restypes=<?php echo urlencode($restypes) ?>" onClick="return CentralSpaceLoad(this);"><?php echo $lang["popularity"]?></a><?php } ?></td><?php } ?>
+
+		if ($display_user_rating_stars && $k==""){?><td><?php if ($order_by=="popularity") {?><span class="Selected"><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&order_by=popularity&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k)?>&restypes=<?php echo urlencode($restypes) ?>&sort=<?php echo urlencode($revsort)?>&mediaapi_canbepublished=<?php echo getvalescaped("mediaapi_canbepublished", "N")?>" onClick="return CentralSpaceLoad(this);"><?php echo $lang["popularity"]?></a><div class="<?php echo urlencode($sort)?>">&nbsp;</div></span><?php } else { ?><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&order_by=popularity&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k)?>&restypes=<?php echo urlencode($restypes) ?>" onClick="return CentralSpaceLoad(this);"><?php echo $lang["popularity"]?></a><?php } ?></td><?php } ?>
 		<td>&nbsp;</td><!-- contains admin ratings -->
-		<?php if ($id_column){?><?php if ($order_by=="resourceid"){?><td class="Selected"><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&sort=<?php echo urlencode($revsort)?>&order_by=resourceid&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k)?>&restypes=<?php echo urlencode($restypes) ?>" onClick="return CentralSpaceLoad(this);"><?php echo $lang["id"]?></a><div class="<?php echo urlencode($sort)?>">&nbsp;</div></td><?php } else { ?><td><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&sort=<?php echo urlencode($revsort)?>&order_by=resourceid&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k)?>&restypes=<?php echo urlencode($restypes) ?>" onClick="return CentralSpaceLoad(this);"><?php echo $lang["id"]?></a></td><?php } ?><?php } ?>
-		<?php if ($resource_type_column){?><?php if ($order_by=="resourcetype"){?><td class="Selected"><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&sort=<?php echo urlencode($revsort)?>&order_by=resourcetype&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k)?>&restypes=<?php echo urlencode($restypes) ?>" onClick="return CentralSpaceLoad(this);"><?php echo $lang["type"]?></a><div class="<?php echo urlencode($sort)?>">&nbsp;</div></td><?php } else { ?><td><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&sort=<?php echo urlencode($revsort)?>&order_by=resourcetype&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k) ?>" onClick="return CentralSpaceLoad(this);"><?php echo $lang["type"]?></a></td><?php } ?><?php } ?>
-		<?php if ($list_view_status_column){?><?php if ($order_by=="status"){?><td class="Selected"><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&sort=<?php echo urlencode($revsort)?>&order_by=status&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k)?>&restypes=<?php echo urlencode($restypes) ?>" onClick="return CentralSpaceLoad(this);"><?php echo $lang["status"]?></a><div class="<?php echo urlencode($sort)?>">&nbsp;</div></td><?php } else { ?><td><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&sort=<?php echo urlencode($revsort)?>&order_by=status&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k) ?>" onClick="return CentralSpaceLoad(this);"><?php echo $lang["status"]?></a></td><?php } ?><?php } ?>
-		<?php if ($date_column){?><?php if ($order_by=="date"){?><td class="Selected"><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&sort=<?php echo urlencode($revsort)?>&order_by=date&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k)?>&restypes=<?php echo urlencode($restypes) ?>" onClick="return CentralSpaceLoad(this);"><?php echo $lang["date"]?></a><div class="<?php echo urlencode($sort)?>">&nbsp;</div></td><?php } else { ?><td><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&sort=<?php echo urlencode($revsort)?>&order_by=date&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k)?>&restypes=<?php echo urlencode($restypes) ?>" onClick="return CentralSpaceLoad(this,true);"><?php echo $lang["date"]?></a></td><?php } ?><?php } ?>
+		<?php if ($id_column){?><?php if ($order_by=="resourceid"){?><td class="Selected"><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&sort=<?php echo urlencode($revsort)?>&order_by=resourceid&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k)?>&restypes=<?php echo urlencode($restypes) ?>&mediaapi_canbepublished=<?php echo getvalescaped("mediaapi_canbepublished", "N")?>" onClick="return CentralSpaceLoad(this);"><?php echo $lang["id"]?></a><div class="<?php echo urlencode($sort)?>">&nbsp;</div></td><?php } else { ?><td><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&sort=<?php echo urlencode($revsort)?>&order_by=resourceid&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k)?>&restypes=<?php echo urlencode($restypes) ?>" onClick="return CentralSpaceLoad(this);"><?php echo $lang["id"]?></a></td><?php } ?><?php } ?>
+		<?php if ($resource_type_column){?><?php if ($order_by=="resourcetype"){?><td class="Selected"><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&sort=<?php echo urlencode($revsort)?>&order_by=resourcetype&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k)?>&restypes=<?php echo urlencode($restypes) ?>&mediaapi_canbepublished=<?php echo getvalescaped("mediaapi_canbepublished", "N")?>" onClick="return CentralSpaceLoad(this);"><?php echo $lang["type"]?></a><div class="<?php echo urlencode($sort)?>">&nbsp;</div></td><?php } else { ?><td><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&sort=<?php echo urlencode($revsort)?>&order_by=resourcetype&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k) ?>" onClick="return CentralSpaceLoad(this);"><?php echo $lang["type"]?></a></td><?php } ?><?php } ?>
+		<?php if ($list_view_status_column){?><?php if ($order_by=="status"){?><td class="Selected"><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&sort=<?php echo urlencode($revsort)?>&order_by=status&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k)?>&restypes=<?php echo urlencode($restypes) ?>&mediaapi_canbepublished=<?php echo getvalescaped("mediaapi_canbepublished", "N")?>" onClick="return CentralSpaceLoad(this);"><?php echo $lang["status"]?></a><div class="<?php echo urlencode($sort)?>">&nbsp;</div></td><?php } else { ?><td><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&sort=<?php echo urlencode($revsort)?>&order_by=status&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k) ?>" onClick="return CentralSpaceLoad(this);"><?php echo $lang["status"]?></a></td><?php } ?><?php } ?>
+		<?php if ($date_column){?><?php if ($order_by=="date"){?><td class="Selected"><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&sort=<?php echo urlencode($revsort)?>&order_by=date&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k)?>&restypes=<?php echo urlencode($restypes) ?>&mediaapi_canbepublished=<?php echo getvalescaped("mediaapi_canbepublished", "N")?>" onClick="return CentralSpaceLoad(this);"><?php echo $lang["date"]?></a><div class="<?php echo urlencode($sort)?>">&nbsp;</div></td><?php } else { ?><td><a href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo urlencode($search)?>&sort=<?php echo urlencode($revsort)?>&order_by=date&archive=<?php echo urlencode($archive) ?>&k=<?php echo urlencode($k)?>&restypes=<?php echo urlencode($restypes) ?>" onClick="return CentralSpaceLoad(this,true);"><?php echo $lang["date"]?></a></td><?php } ?><?php } ?>
 		<?php hook("addlistviewtitlecolumn");?>
 		<td><div class="ListTools"><?php echo $lang["tools"]?></div></td>
 		</tr>
 		<?php } ?> <!--end hook replace listviewtitlerow-->
 		<?php
 		}
-		# Include public collections and themes in the main search, if configured.		
+		# Include public collections and themes in the main search, if configured.
 		if ($offset==0 && isset($collections)&& strpos($search,"!")===false && $archive==0)
 			{
 			include "../include/search_public.php";
 			}
 
-	
+
 	# work out common keywords among the results
 	if ((count($result)>$suggest_threshold) && (strpos($search,"!")===false) && ($suggest_threshold!=-1))
 		{
@@ -763,12 +763,12 @@ if (true) # Always show search header now.
 			for ($n=0;$n<count($suggest);$n++)
 				{
 				if ($n>0) {echo ", ";}
-				?><a  href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo  urlencode(strip_tags($suggest[$n])) ?>" onClick="return CentralSpaceLoad(this);"><?php echo stripslashes($suggest[$n])?></a><?php
+				?><a  href="<?php echo $baseurl_short?>pages/search.php?search=<?php echo  urlencode(strip_tags($suggest[$n])) ?>&mediaapi_canbepublished=<?php echo getvalescaped("mediaapi_canbepublished", "N")?>" onClick="return CentralSpaceLoad(this);"><?php echo stripslashes($suggest[$n])?></a><?php
 				}
 			?></p><?php
 			}
 		}
-		
+
 	$rtypes=array();
 	if (!isset($types)){$types=get_resource_types();}
 	for ($n=0;$n<count($types);$n++) {$rtypes[$types[$n]["ref"]]=$types[$n]["name"];}
@@ -784,7 +784,7 @@ if (true) # Always show search header now.
         # loop and display the results
         for ($n=$offset;(($n<count($result)) && ($n<($offset+$per_page)));$n++)
             {
-			
+
 			if ($order_by=="resourcetype" && $display!="list")
 				{
 				if ($n==0 || ((isset($result[$n-1])) && $result[$n]["resource_type"]!=$result[$n-1]["resource_type"]))
@@ -792,13 +792,13 @@ if (true) # Always show search header now.
 					echo "<h1 class=\"SearchResultsDivider\" style=\"clear:left;\">" . htmlspecialchars($rtypes[$result[$n]["resource_type"]]) .  "</h1>";
 					}
 				}
-			
+
             $ref = $result[$n]["ref"];
             $GLOBALS['get_resource_data_cache'][$ref] = $result[$n];
             $url = $baseurl_short."pages/view.php?ref=" . $ref . "&search=" . urlencode($search) . "&order_by=" . urlencode($order_by) . "&sort=".$sort."&offset=" . urlencode($offset) . "&archive=" . $archive . "&k=" . $k . "&curpos=" . $n;
 
             if (isset($result[$n]["url"])) {$url = $result[$n]["url"];} # Option to override URL in results, e.g. by plugin using process_Search_results hook above
- 
+
             $rating = "";
             if (isset($rating_field)){$rating = "field".$rating_field;}
 
@@ -806,7 +806,7 @@ if (true) # Always show search header now.
                 {
                 #  ---------------------------- Thumbnails view ----------------------------
                 include "search_views/thumbs.php";
-                } 
+                }
 
             if ($display=="xlthumbs")
                 {
@@ -857,7 +857,7 @@ if (true) # Always show search header now.
                 </div><?php
                 }
             } /* end hook replacesearchkey */
-        }        
+        }
     }
 ?>
 <!--Bottom Navigation - Archive, Saved Search plus Collection-->
@@ -867,7 +867,7 @@ if (true) # Always show search header now.
 	<?php if($allow_save_search) { ?><div class="InpageNavLeftBlock"><a onClick="return CollectionDivLoad(this);" href="<?php echo $baseurl_short?>pages/collections.php?addsearch=<?php echo urlencode($search)?>&restypes=<?php echo urlencode($restypes)?>&archive=<?php echo urlencode($archive) ?>&daylimit=<?php echo urlencode($daylimit) ?>">&gt;&nbsp;<?php echo $lang["savethissearchtocollection"]?></a></div><?php } ?>
 	<?php if($allow_smart_collections && substr($search,0,11)!="!collection") { ?><div class="InpageNavLeftBlock"><a onClick="return CollectionDivLoad(this);" href="<?php echo $baseurl_short?>pages/collections.php?addsmartcollection=<?php echo urlencode($search)?>&restypes=<?php echo urlencode($restypes)?>&archive=<?php echo urlencode($archive) ?>&starsearch=<?php echo urlencode($starsearch) ?>">&gt;&nbsp;<?php echo $lang["savesearchassmartcollection"]?></a></div><?php } ?>
 	<?php global $smartsearch; if($allow_smart_collections && substr($search,0,11)=="!collection" && (is_array($smartsearch[0]) && !empty($smartsearch[0]))) { $smartsearch=$smartsearch[0];?><div class="InpageNavLeftBlock"><a onClick="return CentralSpaceLoad(this,true);" href="search.php?search=<?php echo urlencode($smartsearch['search'])?>&restypes=<?php echo urlencode($smartsearch['restypes'])?>&archive=<?php echo urlencode($smartsearch['archive']) ?>&starsearch=<?php echo urlencode($smartsearch['starsearch']) ?>&daylimit=<?php echo urlencode($daylimit) ?>">&gt;&nbsp;<?php echo $lang["dosavedsearch"]?></a></div><?php } ?>
-	
+
 	<?php if ($resources_count!=0){?>
 	<div class="InpageNavLeftBlock"><a onClick="return CollectionDivLoad(this);" href="<?php echo $baseurl_short?>pages/collections.php?addsearch=<?php echo urlencode($search)?>&restypes=<?php echo urlencode($restypes)?>&archive=<?php echo urlencode($archive) ?>&mode=resources&daylimit=<?php echo urlencode($daylimit) ?>">&gt;&nbsp;<?php echo $lang["savesearchitemstocollection"]?></a></div>
 	<?php if($show_searchitemsdiskusage) {?>
@@ -876,20 +876,20 @@ if (true) # Always show search header now.
 	<?php } ?>
 
 	<?php } ?>
-	
+
 	<?php hook("resultsbottomtoolbar"); ?>
-	
-	<?php 
-	$url=$baseurl_short."pages/search.php?search=" . urlencode($search) . "&order_by=" . urlencode($order_by) . "&sort=".$sort."&archive=" . $archive . "&daylimit=" . urlencode($daylimit) . "&k=" . $k. "&restypes=" . urlencode($restypes);	
+
+	<?php
+	$url=$baseurl_short."pages/search.php?search=" . urlencode($search) . "&order_by=" . urlencode($order_by) . "&sort=".$sort."&archive=" . $archive . "&daylimit=" . urlencode($daylimit) . "&k=" . $k. "&restypes=" . urlencode($restypes) . "&mediaapi_canbepublished=" . getvalescaped("mediaapi_canbepublised", "N");
 
 	if (isset($draw_pager)) {pager(false);} ?>
-</div>	
+</div>
 
-<?php 
+<?php
 } # End of replace all results hook conditional
 
 hook("endofsearchpage");?>
-<?php	
+<?php
 
 
 # Add the infobox.

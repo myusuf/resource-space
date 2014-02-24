@@ -436,3 +436,45 @@ function mediaapi_is_resource_published($ref)
     }
     return false;
 }
+
+/**
+ * Return a mapping of the camelcased resource for mediaapi
+ * @return array
+ */
+function mediaapi_get_mapping_resource_fields()
+{
+    return array(
+        'uuid'      => 'uuid',
+        'shortName' => 'shortname',
+        'longName'  => 'longname',
+        'shortDescription' => 'shortdescription',
+        'longDescription'  => 'longdescription',
+        'siteId'    => 'siteid',
+        'detailUrl' => 'detailurl',
+        'externalId' => 'externalid',
+        'mediaType'  => 'mediatype',
+        'thumbnailUrl'  => 'thumbnailurl',
+        'backgroundUrl' => 'backgroundurl',
+        'ccUrl'    => 'ccurl',
+        'duration' => 'duration',
+        'language' => 'language',
+        'aspectRatio' => 'aspectratio',
+        'canEmbed' => 'canembed',
+        'canDownload' => 'candownload',
+        'isPublished' => 'ispublished',
+        'contributorId' => 'contributorid',
+    );
+}
+
+function mediaapi_get_filtered_resource_for_publish($ref)
+{
+    $return = array();
+    foreach (get_resource_field_data($ref, false, true, -1, "") as $data) {
+        $filteredKey = array_search($data['name'], mediaapi_get_mapping_resource_fields());
+        if (false !== $filteredKey) {
+            $return[$filteredKey] = $data['value'];
+        }
+    }
+
+    return $return;
+}

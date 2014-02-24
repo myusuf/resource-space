@@ -83,31 +83,26 @@ function HookMediaapiAllAdditionalvalcheck($fields, $field)
 {
     global $media_resource;
 
-    $mediaapi_fields = array(
-        'uuid'      => 'uuid',
-        'shortName' => 'shortname',
-        'longName'  => 'longname',
-        'shortDescription' => 'shortdescription',
-        'longDescription'  => 'longdescription',
-        'siteId'    => 'siteid',
-        'detailUrl' => 'detailurl',
-        'externalId' => 'externalid',
-        'mediaType'  => 'mediatype',
-        'thumbnailUrl'  => 'thumbnailurl',
-        'backgroundUrl' => 'backgroundurl',
-        'ccUrl'    => 'ccurl',
-        'duration' => 'duration',
-        'language' => 'language',
-        'aspectRatio' => 'aspectratio',
-        'canEmbed' => 'canembed',
-        'canDownload' => 'candownload',
-        'isPublished' => 'ispublished',
-        'contributorId' => 'contributorid',
-    );
+    $mediaapi_fields = mediaapi_get_mapping_resource_fields();
 
     if (($media_resource_key = array_search($field['name'], $mediaapi_fields)) !== false) {
         $media_resource[$media_resource_key] = $field['value'];
     }
 
     return false;
+}
+
+/**
+ * This hook modifies the advance search and adds a filter to check for published media.
+ * @param string $search
+ * @return null
+ */
+function HookMediaapiAllAddspecialsearch($search)
+{
+    global $sql_filter;
+
+    $canbepublished = getval('mediaapi_canbepublished', null);
+    if ($canbepublished === 'Y') {
+        $sql_filter .= " AND (r.last_mediaapi_published = '0000-00-00 00:00:00' OR (r.last_mediaapi_updated != '0000-00-00 00:00:00' AND r.last_mediaapi_updated > r.last_mediaapi_published)) ";
+    }
 }
