@@ -67,10 +67,10 @@ function HookMediaapiEditReplacesubmitbuttons()
     echo '<div class="clearerleft"> </div>';
 	echo '</div>';
 
-	if (getval('ref', null) !== '-1') {
+	if (getval('ref', null) !== '-1' && mediaapi_is_resource_published($ref) === false) {
         echo '<div class="QuestionSubmit">';
-    	echo 'Publish/Synchronize with LOC Media Resource:<br /><br />';
-    	echo '<input name="publish" type="submit" value="Publish" onclick="return confirm(\'Are you sure you want to push the changes to the media resource?\')" />&nbsp;';
+    	echo 'Send resource to LOC Mediaapi:<br /><br />';
+    	echo '<input name="publish" type="submit" value="Send Now!" onclick="return confirm(\'Are you sure you want to push the changes to the media resource database?\')" />&nbsp;';
         echo '<div class="clearerleft"> </div>';
         echo '</div>';
 	}
@@ -136,4 +136,18 @@ function HookMediaapiEditAddfieldextras()
             }
         }
     }
+}
+
+/**
+ * This hook will update the resource table's last_update column
+ * @return boolean
+ */
+function HookMediaapiEditRedirectaftersave()
+{
+    $ref = getval('ref', null);
+    if ($ref !== null) {
+        sql_query('UPDATE resource SET last_mediaapi_updated="' . gmdate('Y-m-d H:i:s') . '" WHERE ref="' . $ref . '"');
+    }
+
+    return false; // explicitly return false to redirect
 }

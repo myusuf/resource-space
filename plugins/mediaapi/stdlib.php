@@ -304,14 +304,14 @@ function mediaapi_get_max_ordinal($resource_ref)
  * Publishes/synchronize a media by way of the mediaapi
  *
  * @param string $resource_ref
- * @param array  $media_resource
+ * @param array  $media_data
  * @return void|mixed
  */
-function mediaapi_publish_resource($resource_ref, array $media_resource)
+function mediaapi_publish_resource($resource_ref, array $media_data)
 {
     // filter the resource. apply some rule on some fields
-    if (!empty($media_resource)) {
-        array_walk($media_resource, function (&$item, $key) {
+    if (!empty($media_data)) {
+        array_walk($media_data, function (&$item, $key) {
             switch ($key) {
                 case 'canEmbed':
                 case 'canDownload':
@@ -325,8 +325,8 @@ function mediaapi_publish_resource($resource_ref, array $media_resource)
                     return;
             }
         });
-        if (empty($media_resource['uuid'])) {
-            unset($media_resource['uuid']);
+        if (empty($media_data['uuid'])) {
+            unset($media_data['uuid']);
         }
     }
 
@@ -358,7 +358,7 @@ function mediaapi_publish_resource($resource_ref, array $media_resource)
         }
 
         // also remove derivatives with derivativeId. This needs to be in a separate update request
-        if (!empty($media_resource['uuid']) && empty($derivatives_copy[$key]['derivativeId'])) {
+        if (!empty($media_data['uuid']) && empty($derivatives_copy[$key]['derivativeId'])) {
             unset($derivatives_copy[$key]['derivativeId']);
             $derivatives_for_create[] = $derivatives_copy[$key];
             unset($derivatives_copy[$key]);
@@ -372,11 +372,11 @@ function mediaapi_publish_resource($resource_ref, array $media_resource)
 
     // add the derivative to the resource
     if (!empty($derivatives)) {
-        $media_resource['derivatives'] = $derivatives;
+        $media_data['derivatives'] = $derivatives;
     }
 
-    if (!empty($media_resource['uuid'])) {
-        $response = mediaapi_update_media($media_resource['uuid'], $media_resource, $access_token);
+    if (!empty($media_data['uuid'])) {
+        $response = mediaapi_update_media($media_data['uuid'], $media_data, $access_token);
         if (isset($response->mediaObjectId)) {
             foreach ($derivatives_for_create as $derivative) {
                 $derivative['mediaObjectId'] = $response->mediaObjectId;
@@ -384,13 +384,13 @@ function mediaapi_publish_resource($resource_ref, array $media_resource)
             }
         }
     } else {
-        $response = mediaapi_create_media($media_resource, $access_token);
+        $response = mediaapi_create_media($media_data, $access_token);
     }
 
     // actual save in the local db
     if (is_object($response) && isset($response->uuid)) {
         // inject the new uuid
-        if (empty($media_resource['uuid'])) {
+        if (empty($media_data['uuid'])) {
             $uuid_field_id = sql_value('SELECT ref AS value FROM resource_type_field WHERE name = "uuid"', null);
             sql_query('UPDATE resource_data SET value="' . $response->uuid . '" WHERE resource="' . $resource_ref . '" AND resource_type_field="' . $uuid_field_id . '"');
         }
@@ -409,7 +409,30 @@ function mediaapi_publish_resource($resource_ref, array $media_resource)
                 );
             }
         }
+
+        // update the last_mediaapi_send
+        sql_query('UPDATE resource SET last_mediaapi_published="' . gmdate('Y-m-d H:i:s') . '" WHERE ref="' . $resource_ref . '"');
     }
 
     return (array) $response;
+}
+
+/**
+ * Is the resource already published?
+ *
+ * @param string $ref
+ * @return bool
+ */
+function mediaapi_is_resource_published($ref)
+{
+    $result = sql_query("SELECT last_mediaapi_published, last_mediaapi_updated FROM resource WHERE ref='" . $ref . "' LIMIT 1");
+    $published = $result[0]['last_mediaapi_published'];
+    $updated   = $result[0]['last_mediaapi_updated'];
+
+    if ((null !== $updated && null !== $published)
+        && (strtotime($updated) < strtotime($published))
+    ) {
+        return true;
+    }
+    return false;
 }

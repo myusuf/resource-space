@@ -73,7 +73,7 @@ function HookMediaapiAllPost_savealternativefile($alt_ref, $parent_resource)
 
 /**
  * This hooks will map the naming of the mediaapi fields to camelcased
- * and preserve it.
+ * and preserve it by saving it under $media_resource variable as a reference
  *
  * @param array $fields
  * @param array $field
