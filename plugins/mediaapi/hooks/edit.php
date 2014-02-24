@@ -133,6 +133,10 @@ function HookMediaapiEditAddfieldextras()
         foreach ($errorDetails as $errorKey => $errorDetail) {
             if (isset($field_id_mappings[$errorKey])) {
                 $errors[$field_id_mappings[$errorKey]] = implode('; ', (array) $errorDetail);
+            } elseif (isset($errorKey)) {
+                // just append to uuid
+                $error = "{$response['Error']}: " . implode('; ', (array) $errorDetail);
+                $errors[$field_id_mappings['uuid']] = $error;
             }
         }
     }
