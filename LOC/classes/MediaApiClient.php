@@ -1,6 +1,5 @@
 <?php
-//include('../plugins/mediaapi/stdlib.php');
-//echo "realpath: " .  realpath('../../../plugins/mediaapi/stdlib.php'); die;
+
 Class MediaApiClient {
 	private $url;
 	
@@ -71,6 +70,7 @@ Class MediaApiClient {
             
             
             $result = curl_exec($process);
+        
             $header_size = curl_getinfo($process, CURLINFO_HEADER_SIZE);
            
             $headers = $this->get_headers_from_curl_response($result);

@@ -1,0 +1,3 @@
+RewriteEngine On
+# This is fix for VirtualDocumentRoot sites to work
+RewriteBase /

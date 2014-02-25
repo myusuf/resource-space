@@ -1,0 +1,5 @@
+ID,int(11),NO,PRI,,auto_increment
+total_number_of_records_processed,int(11),NO,,,
+last_page_number_processed,int(11),NO,,,
+status,varchar(50),NO,,'pending',
+date,timestamp,NO,,CURRENT_TIMESTAMP,"on update CURRENT_TIMESTAMP"

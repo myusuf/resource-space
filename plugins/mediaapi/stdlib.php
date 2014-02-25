@@ -466,6 +466,13 @@ function mediaapi_get_mapping_resource_fields()
     );
 }
 
+/**
+ * Get a the metadata of a resource with filtered keys prepared
+ * for sending to mediaapi
+ *
+ * @param string $ref
+ * @return array
+ */
 function mediaapi_get_filtered_resource_for_publish($ref)
 {
     $return = array();
