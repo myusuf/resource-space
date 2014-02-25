@@ -1,0 +1,18 @@
+<resourceset>
+<resource type='2'>
+<keyfield ref="8">556698</keyfield>
+<field ref='1'>My description of the test</field>
+<field ref='9'>Another Test</field>
+<field ref='3'>India</field>
+<collection>Upload 130425155702</collection>
+<filename>test1.txt</filename>
+</resource>
+<resource type='2'>
+<keyfield ref="8">556699</keyfield>
+<field ref='1'>My description of the test</field>
+<field ref='9'>Another Test</field>
+<field ref='3'>India</field>
+<collection>My Collection</collection>
+<filename>test2.txt</filename>
+</resource>
+</resourceset>

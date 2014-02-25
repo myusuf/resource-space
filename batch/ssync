@@ -1,0 +1,2 @@
+#!/bin/sh
+php /ingest/resourcespace/pages/tools/staticsync.php

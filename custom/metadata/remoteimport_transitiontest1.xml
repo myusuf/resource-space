@@ -1,0 +1,98 @@
+<resourceset>
+<resource type="4">
+<keyfield ref="73">E1D04F8DD101234567838C93F02806B2</keyfield>
+<field ref="8">""Your word will stand when everything else falls.""</field>
+<field ref="77">afc/paterson/dta024</field>
+<field ref="78">mp3</field>
+<field ref="79">dta02401</field>
+<field ref="80">No</field>
+<field ref="81">2013-07-22 17:05</field>
+<field ref="104">1</field>
+<field ref="105">Yes</field>
+<field ref="82">1</field>
+<field ref="92">0</field>
+<field ref="95">Yes</field>
+<field ref="96">Yes</field>
+<field ref="98">Yes</field>
+<field ref="73">E1D04F8DD101234567838C93F02806B2</field>
+<field ref="12">2013-07-18 16:04</field>
+<field ref="83">21</field>
+<field ref="76">""Your word will stand when everything else falls.""</field>
+<field ref="88">Yes</field>
+<field ref="103">http://www.loc.gov:8082/item/afcwip000073</field>
+<field ref="84">loc.afc.afcwip.dta02401</field>
+<collection>batchload_test1</collection>
+</resource>
+<resource type="4">
+<keyfield ref="73">E1D04F8DD201234567838C93F02806B2</keyfield>
+<field ref="8">[The role of the funeral director in a community.]</field>
+<field ref="77">afc/paterson/sla014</field>
+<field ref="78">mp3</field>
+<field ref="79">sla01406</field>
+<field ref="80">No</field>
+<field ref="81">2013-07-22 17:05</field>
+<field ref="104">1</field>
+<field ref="105">Yes</field>
+<field ref="82">1</field>
+<field ref="92">0</field>
+<field ref="95">Yes</field>
+<field ref="96">Yes</field>
+<field ref="98">Yes</field>
+<field ref="73">E1D04F8DD201234567838C93F02806B2</field>
+<field ref="12">2013-07-18 16:04</field>
+<field ref="83">21</field>
+<field ref="76">[The role of the funeral director in a community.]</field>
+<field ref="88">Yes</field>
+<field ref="103">http://www.loc.gov:8082/item/afcwip003618</field>
+<field ref="84">loc.afc.afcwip.sla01406</field>
+<collection>batchload_test1</collection>
+</resource>
+<resource type="4">
+<keyfield ref="73">E1D04F8DD301234567838C93F02806B2</keyfield>
+<field ref="8">""They'll buy basically anything if the price is right.""</field>
+<field ref="77">afc/paterson/tca013</field>
+<field ref="78">mp3</field>
+<field ref="79">tca01305</field>
+<field ref="80">No</field>
+<field ref="81">2013-07-22 17:05</field>
+<field ref="104">1</field>
+<field ref="105">Yes</field>
+<field ref="82">1</field>
+<field ref="92">0</field>
+<field ref="95">Yes</field>
+<field ref="96">Yes</field>
+<field ref="98">Yes</field>
+<field ref="73">E1D04F8DD301234567838C93F02806B2</field>
+<field ref="12">2013-07-18 16:04</field>
+<field ref="83">21</field>
+<field ref="76">""They'll buy basically anything if the price is right.""</field>
+<field ref="88">Yes</field>
+<field ref="103">http://www.loc.gov:8082/item/afcwip003922</field>
+<field ref="84">loc.afc.afcwip.tca01305</field>
+<collection>batchload_test1</collection>
+</resource>
+<resource type="4">
+<keyfield ref="73">E1D04F8DD401234567838C93F02806B2</keyfield>
+<field ref="8">""How long does it take to cook a wiener the way you cook it?""</field>
+<field ref="77">afc/paterson/tla001</field>
+<field ref="78">mp3</field>
+<field ref="79">tla00104</field>
+<field ref="80">No</field>
+<field ref="81">2013-07-22 17:05</field>
+<field ref="104">1</field>
+<field ref="105">Yes</field>
+<field ref="82">1</field>
+<field ref="92">0</field>
+<field ref="95">Yes</field>
+<field ref="96">Yes</field>
+<field ref="98">Yes</field>
+<field ref="73">E1D04F8DD401234567838C93F02806B2</field>
+<field ref="12">2013-07-18 16:04</field>
+<field ref="83">21</field>
+<field ref="76">""How long does it take to cook a wiener the way you cook it?""</field>
+<field ref="88">Yes</field>
+<field ref="103">http://www.loc.gov:8082/item/afcwip004288</field>
+<field ref="84">loc.afc.afcwip.tla00104</field>
+<collection>batchload_test1</collection>
+</resource>
+</resourceset>

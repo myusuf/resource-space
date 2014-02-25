@@ -11,7 +11,7 @@ $mysql_password = 'abc123';
 $mysql_db = 'resourcespace';
 
 # Base URL of the installation
-$baseurl = ($_SERVER['HTTP_HOST'] == 'osidev-imac2.loctest.gov') ? 'http://osidev-imac2.loctest.gov/resourcespace' : 'http://resourcespace-local';
+$baseurl = ($_SERVER['HTTP_HOST'] == 'osidev-imac2.loctest.gov') ? 'http://osidev-imac2.loctest.gov/resourcespace' : "http://{$_SERVER['HTTP_HOST']}";
 
 # Email settings
 $email_from = 'fleo@loc.gov';

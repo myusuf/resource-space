@@ -1,0 +1,36 @@
+What a fabulous application, and open source! Big thanks are owing to
+Oxfam, the original developers and all the people who have contributed
+to ResourceSpace. I hope the rest of us can help it grow!
+
+Like many other people I need to put together a script to import a
+batch of files into ResourceSpace along with metadata from a CSV.
+Basically I'm hoping to write a PHP script that will do what the edit
+and upload pages do, over and over for a batch of assets of various
+types.
+
+I've seen the examples on the forum, but as a complete newbie I'm
+having trouble clarifying the basic steps an import script needs to
+do. This is how it looks to me so far:
+
+1. Read the first line of the CSV, which gives us the filename of the
+first asset and its metadata.
+2. Create a resource in ResourceSpace, giving it a temporary ref which
+is the negative of the ref of the user doing the import. (So if I'm
+user 2, give the resource ref -2).
+3. Update the resource data for that asset using the data from the
+CSV. (Assuming we've worked out the data mapping in advance.)
+4. Copy the file into the ResourceSpace filestore.
+5. Give the resource a "proper" resource ref.
+6. Generate preview files, extracted text and keywords from the file
+we've just copied in.
+7. Loop back to next line of CSV.
+
+Could some kind benefactor please give us any hints about which
+functions we should call to do steps 2 to 6? If there's no function
+that'll automatically create the right folder within /filestore to
+store a new resource, what file structure should we use so the assets
+are properly organised?
+
+Thanks guys
+Aethaelweard
+
