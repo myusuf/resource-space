@@ -67,7 +67,7 @@ function HookMediaapiEditReplacesubmitbuttons()
     echo '<div class="clearerleft"> </div>';
 	echo '</div>';
 
-	if (getval('ref', null) !== '-1' && mediaapi_is_resource_published($ref) === false) {
+	if (strpos(getval('ref', null), '-') === false && mediaapi_is_resource_published($ref) === false) {
         echo '<div class="QuestionSubmit">';
     	echo 'Send resource to LOC Mediaapi:<br /><br />';
     	echo '<input name="publish" type="submit" value="Send Now!" onclick="return confirm(\'Are you sure you want to push the changes to the media resource database?\')" />&nbsp;';
