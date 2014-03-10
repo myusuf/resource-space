@@ -3,6 +3,7 @@
 ## ResourceSpace
 ## DO NOT COMMIT
 ###############################
+require __DIR__ . '/../lib/fdldebug/Bootstrapper.php';
 
 # MySQL database settings
 $mysql_server = '192.168.2.2';
@@ -12,6 +13,7 @@ $mysql_db = 'resourcespace';
 
 # Base URL of the installation
 $baseurl = ($_SERVER['HTTP_HOST'] == 'osidev-imac2.loctest.gov') ? 'http://osidev-imac2.loctest.gov/resourcespace' : "http://{$_SERVER['HTTP_HOST']}";
+$storageurl="http://resourcespace.local/filestore";
 
 # Email settings
 $email_from = 'fleo@loc.gov';

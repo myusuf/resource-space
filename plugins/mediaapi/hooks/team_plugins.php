@@ -152,5 +152,11 @@ function HookMediaapiTeam_pluginsInitialise()
             ON DUPLICATE KEY UPDATE
             `name` = 'contributorid', `title` = 'Contributor id'
         ");
+
+
+        // add the captions resource typ
+        sql_query("
+            INSERT IGNORE INTO `resource_type` (`ref`, `name`, `allowed_extensions`, `order_by`) VALUE (5, 'Caption', NULL, NULL)
+        ");
      }
 }

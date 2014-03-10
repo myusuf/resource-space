@@ -485,3 +485,31 @@ function mediaapi_get_filtered_resource_for_publish($ref)
 
     return $return;
 }
+
+/**
+ * Add related resources
+ * @param string $ref
+ * @param string $related_resources
+ */
+function mediaapi_update_related_resource($ref, $related_resources)
+{
+    if (is_array($related_resources) && count($related_resources > 1)) {
+        sql_query("insert into resource_related(`resource`, `related`) values ($ref," . implode("), (" . $ref . ",", $related_resources) . ")");
+    } else {
+        //echo "insert into resource_related(`resource`, `related`) values ($ref, $related_resources)";die;
+        sql_query("insert into resource_related(`resource`, `related`) values ($ref, $related_resources)");
+    }
+}
+
+/**
+ * Updates a resource data
+ * @param int $resource
+ * @param int $field
+ * @param string $value
+ */
+function mediaapi_update_resource_data($resource, $field, $value)
+{
+    sql_query("delete from resource_data where resource='$resource' and resource_type_field='$field'");
+	$value=escape_check($value);
+	sql_query("insert into resource_data(resource,resource_type_field,value) values ('$resource','$field','$value')");
+}
