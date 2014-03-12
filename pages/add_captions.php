@@ -27,6 +27,8 @@ if ((!get_edit_access($ref,$resource_data["archive"], false,$resource_data) || c
 
 hook("pageevaluation");
 
+$save_errors = array();
+
 # Handle adding a new file
 if ($_FILES)
 	{
@@ -34,40 +36,43 @@ if ($_FILES)
         	{
             	# Fetch filename / path
             	$processfile=$_FILES['newfile'];
-           	    $filename=strtolower(str_replace(" ","_",$processfile['name']));
+            	if ($processfile['error'] === 0) {
+                	$filename=strtolower(str_replace(" ","_",$processfile['name']));
 
-            	# Work out extension
-            	$extension=explode(".",$filename);$extension=trim(strtolower($extension[count($extension)-1]));
+                	# Work out extension
+                	$extension=explode(".",$filename);$extension=trim(strtolower($extension[count($extension)-1]));
 
-            	$new_cap_res=copy_resource($ref, $resource_data['resource_type']);
+                	$new_cap_res=create_resource($resource_data['resource_type']);
 
-        		# Find the path for this resource.
-            	$path=get_resource_path($new_cap_res, true, "", true, $extension, -1, 1, false, "");
-            	$title = getvalescaped('name', 'caption');
+            		# Find the path for this resource.
+                	$path=get_resource_path($new_cap_res, true, "", true, $extension, -1, 1, false, "");
+                	$title=getvalescaped('name', 'caption');
 
-            	update_resource($new_cap_res,$path,$resource_data['resource_type'],$title,false,false);
+                	update_resource($new_cap_res,$path,$resource_data['resource_type'],$title,false,false);
 
-            	# update the related resources
-            	mediaapi_update_related_resource($ref, $new_cap_res);
+                	# update the related resources
+                	mediaapi_update_related_resource($ref, $new_cap_res);
 
-            	# add to the cc url
-            	$cc_url = $storageurl . substr($path, strpos($path, 'filestore/') + 9);
-            	mediaapi_update_resource_data($ref, 88, $cc_url);
+                	# add to the cc url
+                	$cc_url = $storageurl . substr($path, strpos($path, 'filestore/') + 9);
+                	mediaapi_update_resource_data($ref, 88, $cc_url);
 
-        		# Debug
-        		debug("Uploading alternative file $ref with extension $extension to $path");
+            		if ($filename!="")
+            			{
+            			$result=move_uploaded_file($processfile['tmp_name'], $path);
+            			if ($result==false)
+            				{
+            				exit("File upload error. Please check the size of the file you are trying to upload.");
+            				}
 
-        		if ($filename!="")
-        			{
-        			$result=move_uploaded_file($processfile['tmp_name'], $path);
-        			if ($result==false)
-        				{
-        				exit("File upload error. Please check the size of the file you are trying to upload.");
-        				}
+            			# Log this
+            			resource_log($ref,"b","",$ref . ": " . getvalescaped("name","") . ", " . getvalescaped("description","") . ", " . escape_check($filename));
+            			}
 
-        			# Log this
-        			resource_log($ref,"b","",$ref . ": " . getvalescaped("name","") . ", " . getvalescaped("description","") . ", " . escape_check($filename));
-        			}
+                    redirect ($baseurl_short."pages/edit.php?ref=$ref&search=".urlencode($search)."&offset=$offset&order_by=$order_by&sort=$sort&archive=$archive");
+            	} else {
+            	    $save_errors[] = "Problem uploading file.";
+            	}
     		}
 	}
 
@@ -94,11 +99,6 @@ include "../include/header.php";
         </div>
 
         <div class="Question">
-        <label for="name"><?php echo $lang["description"]?></label><input type=text class="stdwidth" name="description" id="description" value="" maxlength="200">
-        <div class="clearerleft"> </div>
-        </div>
-
-        <div class="Question">
         <label for="userfile"><?php echo $lang["uploadreplacementfile"] ?></label>
         <input type="file" name="newfile" id="newfile" size="80">
         <div class="clearerleft"> </div>
@@ -109,5 +109,13 @@ include "../include/header.php";
 </div>
 
 <?php
+foreach ($save_errors as $save_error_field=>$save_error_message)
+	{
+	?>
+    <script type="text/javascript">
+    alert('<?php echo htmlspecialchars($save_error_message) ?>');
+    </script><?php
+    }
+
 include "../include/footer.php";
 ?>

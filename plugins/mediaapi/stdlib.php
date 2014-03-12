@@ -512,4 +512,5 @@ function mediaapi_update_resource_data($resource, $field, $value)
     sql_query("delete from resource_data where resource='$resource' and resource_type_field='$field'");
 	$value=escape_check($value);
 	sql_query("insert into resource_data(resource,resource_type_field,value) values ('$resource','$field','$value')");
+	sql_query("update resource set last_mediaapi_updated='" . date('Y-m-d H:i:s') . "' where ref='" . $resource . "'");
 }

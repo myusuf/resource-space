@@ -162,6 +162,6 @@ function HookMediaapiEditRedirectaftersave()
 function HookMediaapiEditAfterfileoptions()
 {
     global $baseurl_short, $ref, $search, $offset, $order_by, $sort, $archive;
-    echo '<br /> <a href="'.$baseurl_short.'pages/add_captions.php?ref='.urlencode($ref).'&exif=true&search='.urlencode($search).'&offset='.urlencode($offset).'&order_by='.urlencode($order_by).'&sort='.urlencode($sort).'&archive='.urlencode($archive).'">&gt;';
+    echo '<br /> <a href="'.$baseurl_short.'pages/add_captions.php?ref='.urlencode($ref).'&exif=true&search='.urlencode($search).'&offset='.urlencode($offset).'&order_by='.urlencode($order_by).'&sort='.urlencode($sort).'&archive='.urlencode($archive).'">&gt; ';
     echo 'Add captions</a>';
 }
