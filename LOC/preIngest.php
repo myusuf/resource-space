@@ -136,7 +136,7 @@ fwrite($logfile,"Starting preIngest");
 
 $ingestTracking = new IngestTracking();
 $lastPageProcessed = $ingestTracking->getLastPageNumberProcessed();
-$lastPageProcessed = 1734;
+//$lastPageProcessed = 1734;
 
   $page = $lastPageProcessed+1;
   $numpages_in_this_run = 0;
@@ -151,7 +151,6 @@ $lastPageProcessed = 1734;
     foreach ($mediaArray as $media) {
         if(isValid($media)) {
             $uuid = $media['uuid'];
-          
             if(isset($existingResources[$uuid])) {
                 echo "$uuid already exists in RS skipping\n";
                 continue;
@@ -177,7 +176,6 @@ $lastPageProcessed = 1734;
      
         //copy main derivative
         if(file_exists($fdFullPathName)) {
-          
             copy($fdFullPathName, $destinationPath . "/$firstDerivativeFileName"); 
             //get thumbnail
        
@@ -195,12 +193,10 @@ $lastPageProcessed = 1734;
         foreach($media["derivatives"] as $derivative) {
             $sourceDerivative = $SourcemediaFileBaseDir . "/" .$derivative["filePath"] . "/" . $derivative["fileName"] . "." . $derivative["fileExtension"];
             $destinationDerivative = $derivativeDir . "/" . $derivative['fileName'] . "." . $derivative['fileExtension'];
-        
             if(file_exists($sourceDerivative)) {
                 $derivativeMetataFile = $destinationDerivative . ".json";
                 copy($sourceDerivative, $destinationDerivative);
                 writeMetadata($derivative, $derivativeMetataFile);
-            
             } else {
                 echo "Derivative: $sourceDerivative doesn't exist skipping\n";
                 continue;
@@ -209,8 +205,8 @@ $lastPageProcessed = 1734;
     }
   }
   
-   $data["last_page_number_processed"] = $page;
-   $data["total_number_of_records_processed"] = $itemsProcessed;
+  $data["last_page_number_processed"] = $page;
+  $data["total_number_of_records_processed"] = $itemsProcessed;
   $page++;
   $numpages_in_this_run++;
   
