@@ -69,7 +69,6 @@ Class FieldMap{
         $mediaTypeMap = $this->getMediaTypeMap();
         echo var_dump($mediaTypeMap);
         if(isset($mediaTypeMap[$mediaType])) {
-            //echo "HHERE I AM\n";
             return $mediaTypeMap[$mediaType];
         }
         return null;

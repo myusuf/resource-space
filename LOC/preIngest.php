@@ -13,6 +13,7 @@ include("classes/FieldMap.php");
 include("classes/MediaApiClient.php");
 include("config/config.php");
 include("classes/IngestTracking.php");
+include("classes/IngestLogger.php");
 
 
 /**
@@ -57,7 +58,8 @@ function writeMetadata($arr, $absoluteFileName) {
  */
 function downloadThumbNail($url,$destinationDir, $uuid) {
    if (filter_var($url, FILTER_VALIDATE_URL) === FALSE) {
-        echo "Not valid URL\t UUID: $uuid\t URL: $url\n";
+       IngestLogger::writeEntry("Not valid URL\t UUID: $uuid\t URL: $url",'Info');
+       //echo "Not valid URL\t UUID: $uuid\t URL: $url\n";
         return;
     }
     
@@ -121,17 +123,11 @@ $args = arguments($argv);
 
 if(isset($args['reset']) && $args['reset']=='true') {
     $result = sql_query("delete from ingest_tracking where id>1");
-   
+   IngestLogger::writeEntry("Resetting the IngestTracking Table",'Info');
     //system("rm -rf $syncDirectory" . "/*");
   
 }
 $existingResources =  getIngestedResources();
-
-
-$now = date("Y-m-d H:i:s");
-$logfile = fopen("$dataDir/preSync.log", "wb");
-fwrite($logfile,"Starting preIngest");
-
 
 
 $ingestTracking = new IngestTracking();
@@ -143,16 +139,16 @@ $lastPageProcessed = $ingestTracking->getLastPageNumberProcessed();
   $itemsProcessed = 0;
   $max_pages = 5;
   do {
-      echo "processing page $page .....\n";
-    $params = array('page'=>$page);
-    $mediaApiClient = new MediaApiClient($mediaUrl);
-    $mediaArray = json_decode($mediaApiClient->getMedia($params), true);
-    $pageCount =  $mediaApiClient->getPageCount();   
+     IngestLogger::writeEntry("processing page $page",'Info');
+     $params = array('page'=>$page);
+     $mediaApiClient = new MediaApiClient($mediaUrl);
+     $mediaArray = json_decode($mediaApiClient->getMedia($params), true);
+     $pageCount =  $mediaApiClient->getPageCount();   
     foreach ($mediaArray as $media) {
         if(isValid($media)) {
             $uuid = $media['uuid'];
             if(isset($existingResources[$uuid])) {
-                echo "$uuid already exists in RS skipping\n";
+                IngestLogger::writeEntry("$uuid already exists in RS skipping..",'Info');
                 continue;
             }
        
@@ -180,7 +176,7 @@ $lastPageProcessed = $ingestTracking->getLastPageNumberProcessed();
             //get thumbnail
        
         } else {
-            echo "file: $fdFullPathName doesn't exist skipping\n";
+            IngestLogger::writeEntry("file: $fdFullPathName doesn't exist skipping",'data');
             continue;
         }
         $itemsProcessed++;
@@ -198,7 +194,7 @@ $lastPageProcessed = $ingestTracking->getLastPageNumberProcessed();
                 copy($sourceDerivative, $destinationDerivative);
                 writeMetadata($derivative, $derivativeMetataFile);
             } else {
-                echo "Derivative: $sourceDerivative doesn't exist skipping\n";
+                IngestLogger::writeEntry("Derivative: $sourceDerivative doesn't exist skipping",'Info');
                 continue;
             }
         }
@@ -213,6 +209,7 @@ $lastPageProcessed = $ingestTracking->getLastPageNumberProcessed();
   } while ($page<=$pageCount && $numpages_in_this_run<$max_pages);
    
   $ingestTracking->writeData($data);
-  echo "DONE: Processed $itemsProcessed items\n\n";
+  IngestLogger::writeEntry("DONE: Processed $itemsProcessed",'Info');
+  
         
 

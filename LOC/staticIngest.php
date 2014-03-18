@@ -1,4 +1,4 @@
-<?php
+<?php 
 include dirname(__FILE__) . "/../include/db.php";
 include dirname(__FILE__) . "/../include/general.php";
 include dirname(__FILE__) . "/../include/resource_functions.php";
@@ -102,7 +102,7 @@ function updateMediaMetadata($r, $filename) {
                 update_field ($r,$fieldMap[$key], $mediaArray[$key]);
             }
         }
-        //unlink($filename);
+        unlink($filename);
 }
 
 function updateThumb($imageFile, $r)  {
@@ -157,10 +157,9 @@ function updateDerivativeMetadata($r, $altid, $metadataFile, $newDerivativePath)
      }
      $ordinal = $newDerivativeArray["ordinal"];
       mediaapi_upsert_derivative_resources($altid, $newDerivativeArray);
-      //unlink($metadataFile);
-     //mediaapi_insert_derivative_data($r, $altid, $ordinal, $newDerivativeArray);
+      unlink($metadataFile);
+     
     
-            
 }
 function upload_preview_loc($ref, $thumbfile)
 {
@@ -395,7 +394,7 @@ function ProcessFolder($folder)
 								{
 								# Match. Extract metadata.
 								$path_parts=explode("/",$shortpath);
-                                                                //echo var_dump($path_parts);
+                                                            
 								if ($level<count($path_parts))
 									{
 									// special cases first.
@@ -455,13 +454,14 @@ function ProcessFolder($folder)
 						$adh=opendir($altpath);
 						while (($altfile = readdir($adh)) !== false)
 							{
+                                                        if(file_exists($altpath ."/" .$altfile)) {
 							$filetype=filetype($altpath . "/" . $altfile);
 							if (($filetype=="file") && (substr($file,0,1)!=".") && (strtolower($file)!="thumbs.db"))
 								{
 								# Create alternative file
 								global $lang;
 								if(preg_match('/(.+).json/', $altfile, $matches)) {
-                       
+                                                                        //echo "metafile: $altfile\n";
                                                                         continue;
                   
                                                                     }
@@ -471,17 +471,17 @@ function ProcessFolder($folder)
 								$aref = add_alternative_file($r, $altfile, $altfile, $altfile, $ext, filesize_unlimited($altpath . "/" . $altfile));
 								//add_alternative_file($resource,$name,$description="",$file_name="",$file_extension="",$file_size=0,$alt_type='');
                                                                 $path=get_resource_path($r, true, "", true, $ext, -1, 1, false, "", $aref);
-                                                                echo "resourcepath: $path";
+                                                            
 								rename ($altpath . "/" . $altfile,$path); # Move alternative file
                                                                 $derMetadataFile = $altpath ."/". $altfile . ".json";
-                                                                //echo "derivative Metadata File: $derMetadataFile";
+                                                                
                                                                 if(file_exists($derMetadataFile)) {
                                                                     updateDerivativeMetadata($r, $aref, $derMetadataFile, $path);
                                                                 }
                                                                 
 							    }
+                                                        }
 							}	
-						}
 					
 					# Add to collection
 					if ($staticsync_autotheme)
