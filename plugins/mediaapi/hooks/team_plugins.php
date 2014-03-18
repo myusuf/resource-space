@@ -154,9 +154,13 @@ function HookMediaapiTeam_pluginsInitialise()
         ");
 
 
+	sql_query("INSERT IGNORE INTO `resource_type_field` (`ref`, `name`, `title`, `type`, `options`, `order_by`, `keywords_index`, `partial_index`, `resource_type`, `resource_column`, `display_field`, `use_for_similar`, `iptc_equiv`, `display_template`, `tab_name`, `required`, `smart_theme_name`, `exiftool_field`, `advanced_search`, `simple_search`, `help_text`, `display_as_dropdown`, `external_user_access`, `autocomplete_macro`, `hide_when_uploading`, `hide_when_restricted`, `value_filter`, `exiftool_filter`, `omit_when_copying`, `tooltip_text`, `regexp_filter`, `sync_field`, `display_condition`) VALUES
+(97, 'title', 'Title', NULL, NULL, 0, 0, 0, 0, NULL, 1, 1, '2#005', NULL, NULL, 0, NULL, 'Title', 1, 0, NULL, 0, 1, NULL, 0, 0, NULL, NULL, 0, NULL, NULL, NULL, NULL),
+(98, 'caption', 'Caption', 1, NULL, 0, 1, 0, 0, NULL, 1, 1, NULL, '<div class=\"item\"><h3>[title]</h3><p>[value]</p></div>\r\n \r\n<div class=\"clearerleft\"> </div>', NULL, 0, NULL, 'Caption-Abstract,Description,ImageDescription', 1, 1, NULL, 0, 1, NULL, 0, 0, NULL, NULL, 0, NULL, NULL, NULL, NULL)");
         // add the captions resource typ
         sql_query("
             INSERT IGNORE INTO `resource_type` (`ref`, `name`, `allowed_extensions`, `order_by`) VALUE (5, 'Caption', NULL, NULL)
         ");
+
      }
 }
