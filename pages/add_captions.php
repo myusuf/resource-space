@@ -37,6 +37,11 @@ if ($_FILES)
             	# Fetch filename / path
             	$processfile=$_FILES['newfile'];
             	if ($processfile['error'] === 0) {
+            	    $type_mapping = array(
+            	       88 => 'caption',
+            	       99 => 'transcript',
+            	    );
+
                 	$filename=strtolower(str_replace(" ","_",$processfile['name']));
 
                 	# Work out extension
@@ -45,6 +50,7 @@ if ($_FILES)
                 	$new_cap_res=create_resource($resource_data['resource_type']);
 
             		# Find the path for this resource.
+            		$type=getval('url_type', 'caption');
                 	$path=get_resource_path($new_cap_res, true, "", true, $extension, -1, 1, false, "");
                 	$title=getvalescaped('name', 'caption');
 
@@ -54,8 +60,9 @@ if ($_FILES)
                 	mediaapi_update_related_resource($ref, $new_cap_res);
 
                 	# add to the cc url
-                	$cc_url = $storageurl . substr($path, strpos($path, 'filestore/') + 9);
-                	mediaapi_update_resource_data($ref, 88, $cc_url);
+                	$url = $storageurl . substr($path, strpos($path, 'filestore/') + 9);
+                	$resource_type_id = array_search($type, $type_mapping);
+                	mediaapi_update_resource_data($ref, $resource_type_id, $url);
 
             		if ($filename!="")
             			{
@@ -82,7 +89,7 @@ include "../include/header.php";
 
 <!--Create a new file-->
 <div class="BasicsBox">
-    <h1>Add captions file</h1>
+    <h1>Add captions/transcripts file</h1>
     <form method="post" enctype="multipart/form-data"  action="<?php echo $baseurl_short?>pages/add_captions.php">
 
         <input type="hidden" name="MAX_FILE_SIZE" value="500000000">
@@ -94,7 +101,16 @@ include "../include/header.php";
         </div>
 
         <div class="Question">
-        <label for="name"><?php echo $lang["name"]?></label><input type=text class="stdwidth" name="name" id="name" value="Caption for resource <?php echo $ref; ?>" maxlength="100">
+        <label for="name"><?php echo $lang["name"]?></label><input type=text class="stdwidth" name="name" id="name" value="Resource <?php echo $ref; ?>" maxlength="100">
+        <div class="clearerleft"> </div>
+        </div>
+
+        <div class="Question">
+        <label for="name">URL type</label>
+            <select class="stdwidth" name="url_type" id="type">
+               <option value="caption">Caption</option>
+        	   <option value="transcript">Transcript</option>
+        	</select>
         <div class="clearerleft"> </div>
         </div>
 

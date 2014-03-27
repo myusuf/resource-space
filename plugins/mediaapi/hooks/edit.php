@@ -106,27 +106,7 @@ function HookMediaapiEditAddfieldextras()
 {
     global $errors, $response;
 
-    $field_id_mappings = array(
-        'uuid'             => 77,
-        'shortName'        => 78,
-        'longName'         => 79,
-        'shortDescription' => 80,
-        'longDescription'  => 81,
-        'siteId'           => 82,
-        'detailUrl'        => 83,
-        'externalId'       => 84,
-        'mediaType'        => 85,
-        'thumbnailUrl'     => 86,
-        'backgroundUrl'    => 87,
-        'ccUrl'            => 88,
-        'duration'         => 89,
-        'language'         => 90,
-        'aspectRatio'      => 91,
-        'canEmbed'         => 92,
-        'canDownload'      => 93,
-        'isPublished'      => 94,
-        'contributorId'    => 95,
-    );
+    $field_id_mappings = mediaapi_get_resource_id_mappings();
 
     if (!empty($response['Details'])) {
         $errorDetails = (array) $response['Details'];
@@ -163,5 +143,5 @@ function HookMediaapiEditAfterfileoptions()
 {
     global $baseurl_short, $ref, $search, $offset, $order_by, $sort, $archive;
     echo '<br /> <a href="'.$baseurl_short.'pages/add_captions.php?ref='.urlencode($ref).'&exif=true&search='.urlencode($search).'&offset='.urlencode($offset).'&order_by='.urlencode($order_by).'&sort='.urlencode($sort).'&archive='.urlencode($archive).'">&gt; ';
-    echo 'Add captions</a>';
+    echo 'Add captions/transcripts</a>';
 }

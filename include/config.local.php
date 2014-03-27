@@ -3,7 +3,7 @@
 ## ResourceSpace
 ## DO NOT COMMIT
 ###############################
-require __DIR__ . '/../lib/fdldebug/Bootstrapper.php';
+//require __DIR__ . '/../lib/fdldebug/Bootstrapper.php';
 
 # MySQL database settings
 $mysql_server = '192.168.2.2';

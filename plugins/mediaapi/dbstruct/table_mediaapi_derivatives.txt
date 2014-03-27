@@ -13,5 +13,6 @@ is_downloadable,"enum('Y','N')",YES,,N,
 is_streamable,"enum('Y','N')",YES,,N,
 is_primary,"enum('Y','N')",YES,,N,
 derivative_url,varchar(100),YES,,,
+aspect_ratio,varchar(20),YES,,,
 last_updated,timestamp,NO,,'0000-00-00 00:00:00',"on update CURRENT_TIMESTAMP"
 last_published,datetime,NO,,,

@@ -140,6 +140,17 @@ include "../include/header.php";
 
 <div class="Question">
 <?php $prefix = !empty($mediaapi_derivatives['prefix']) ? $mediaapi_derivatives['prefix'] : ''; ?>
+<label for="name">Aspect Ratio</label>
+    <?php $aspect_ratio = !empty($mediaapi_derivatives['aspect_ratio']) ? $mediaapi_derivatives['aspect_ratio'] : ''; ?>
+    <select class="stdwidth" name="aspect_ratio" id="aspect_ratio">
+       <option <?php echo ($aspect_ratio == '16:9')  ? 'selected="selected"' : ''; ?> value="16:9">16:9</option>
+	   <option <?php echo ($aspect_ratio == '4:3')  ? 'selected="selected"' : ''; ?> value="4:3">4:3</option>
+	</select>
+<div class="clearerleft"> </div>
+</div>
+
+<div class="Question">
+<?php $prefix = !empty($mediaapi_derivatives['prefix']) ? $mediaapi_derivatives['prefix'] : ''; ?>
 <label for="name">Prefix</label><?php echo htmlspecialchars($prefix) ?>
 <div class="clearerleft"> </div>
 </div>

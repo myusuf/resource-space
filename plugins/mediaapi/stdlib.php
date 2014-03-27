@@ -116,6 +116,7 @@ function mediaapi_collect_derivative_data(array $data = null)
     $derivative['is_downloadable'] = getvalescaped("is_downloadable", (isset($data['is_downloadable']) ? $data['is_downloadable'] : ""));
     $derivative['is_streamable']   = getvalescaped("is_streamable", (isset($data['is_streamable']) ? $data['is_streamable'] : ""));
     $derivative['is_primary']      = getvalescaped("is_primary", (isset($data['is_primary']) ? $data['is_primary'] : ""));
+    $derivative['aspect_ratio']    = getvalescaped("aspect_ratio", (isset($data['aspect_ratio']) ? $data['aspect_ratio'] : ""));
 
     return $derivative;
 }
@@ -437,33 +438,45 @@ function mediaapi_is_resource_published($ref)
     return false;
 }
 
+function mediaapi_get_resource_id_mappings()
+{
+    return array(
+        'uuid'             => 77,
+        'shortName'        => 78,
+        'longName'         => 79,
+        'shortDescription' => 80,
+        'longDescription'  => 81,
+        'siteId'           => 82,
+        'detailUrl'        => 83,
+        'externalId'       => 84,
+        'mediaType'        => 85,
+        'thumbnailUrl'     => 86,
+        'backgroundUrl'    => 87,
+        'ccUrl'            => 88,
+        'duration'         => 89,
+        'language'         => 90,
+        'aspectRatio'      => 91,
+        'canEmbed'         => 92,
+        'canDownload'      => 93,
+        'isPublished'      => 94,
+        'contributorId'    => 95,
+        'transcriptUrl'    => 99,
+    );
+}
+
 /**
  * Return a mapping of the camelcased resource for mediaapi
  * @return array
  */
 function mediaapi_get_mapping_resource_fields()
 {
-    return array(
-        'uuid'      => 'uuid',
-        'shortName' => 'shortname',
-        'longName'  => 'longname',
-        'shortDescription' => 'shortdescription',
-        'longDescription'  => 'longdescription',
-        'siteId'    => 'siteid',
-        'detailUrl' => 'detailurl',
-        'externalId' => 'externalid',
-        'mediaType'  => 'mediatype',
-        'thumbnailUrl'  => 'thumbnailurl',
-        'backgroundUrl' => 'backgroundurl',
-        'ccUrl'    => 'ccurl',
-        'duration' => 'duration',
-        'language' => 'language',
-        'aspectRatio' => 'aspectratio',
-        'canEmbed' => 'canembed',
-        'canDownload' => 'candownload',
-        'isPublished' => 'ispublished',
-        'contributorId' => 'contributorid',
-    );
+    $resource_mapping = mediaapi_get_resource_id_mappings();
+    $mapping_lower_case_orig = array_keys($resource_mapping);
+    $mapping_lower_case = array_map(function ($item1) {
+        return strtolower($item1);
+    }, $mapping_lower_case_orig);
+
+    return array_combine($mapping_lower_case_orig, $mapping_lower_case);
 }
 
 /**
